@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import reset first */
+@import "./reset.css";
+
+/* Layout base */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  @apply bg-black text-white font-sans;
+}
+
+/* Element enhancements */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold text-gray-200;
+}
+
+p {
+  @apply text-gray-300;
+}
+
+a {
+  @apply text-blue-400 hover:underline;
+}
+
+code {
+  @apply font-mono text-sm bg-zinc-800 px-1 py-0.5 rounded;
+}
+
+/* Scrollbar theming */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-600 rounded;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-zinc-800;
+}
