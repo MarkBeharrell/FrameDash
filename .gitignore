@@ -1,28 +1,26 @@
 # Node modules
 node_modules/
 
-# Production build output
+# Build output
 .next/
 out/
 dist/
 
-# System files
-.DS_Store
-Thumbs.db
-
-# Env files
+# Environment variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*.local
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Editor settings
+# System / OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE files
 .vscode/
 .idea/
 
@@ -33,18 +31,16 @@ yarn-error.log*
 docker-compose.override.yml
 *.pid
 
-# Optional: lockfiles (if using a single one)
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-
 # Tailwind JIT artifacts
 tailwind.config.js.backup
 
-# Coverage reports
+# Coverage and test output
 coverage/
 *.lcov
 
-# Optional if you generate static weather icons/fonts locally
+# Weather icons & fonts (if downloaded locally)
 public/weather-icons/
 public/fonts/
+
+# Misc
+*.swp
