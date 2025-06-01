@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import '../node_modules/weather-icons/css/weather-icons.css';
 import '../node_modules/weather-icons/css/weather-icons.min.css';
+import "@/lib/polyfills"; 
 
 import { Inter } from "next/font/google";
 import Head from "next/head";
@@ -20,7 +21,7 @@ export default function RootLayout({ children }) {
       </Head>
       <body className="bg-black text-white min-h-screen">
         <div className="min-h-screen flex flex-col">
-          <main className="grid grid-cols-1 md:grid-cols-6 gap-6 p-6 text-white bg-black min-h-screen">
+<main className="grid grid-cols-1 md:grid-cols-6 auto-rows-fr gap-6 p-6 text-white bg-black min-h-screen">
             {children}
           </main>
           <footer className="text-center p-4 text-xs text-zinc-400">

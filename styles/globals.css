@@ -1,9 +1,8 @@
+@import "./resets.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import reset first */
-@import "./resets.css";
 
 /* Layout base */
 html, body, #__next {

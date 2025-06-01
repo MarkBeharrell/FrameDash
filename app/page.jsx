@@ -10,19 +10,23 @@ export default function DashboardPage() {
   const metrics = useLiveMetrics(5000);
 
   return (
-    <>
-      <section className="md:col-span-6 bg-zinc-900 p-4 rounded-xl shadow-xl">
-        <WeatherTimeWidget />
-      </section>
-      <section className="md:col-span-2 bg-zinc-900 p-4 rounded-xl shadow-xl">
-        <CpuStats metrics={metrics} />
-      </section>
-      <section className="md:col-span-2 bg-zinc-900 p-4 rounded-xl shadow-xl">
-        <MemoryStats metrics={metrics} />
-      </section>
-      <section className="md:col-span-2 bg-zinc-900 p-4 rounded-xl shadow-xl">
-        <TempStats metrics={metrics} />
-      </section>
+    < >
+
+<section className="md:col-span-6 p-6 rounded-md border border-solid border-gray-700">
+  <WeatherTimeWidget />
+</section>
+
+<section className="md:col-span-2  p-6 rounded-md border border-solid border-gray-700 h-full flex flex-col">
+  <CpuStats metrics={metrics} />
+</section>
+
+<section className="md:col-span-2 p-6 rounded-md border border-solid border-gray-700 h-full flex flex-col">
+  <MemoryStats metrics={metrics} />
+</section>
+
+<section className="md:col-span-2 p-6 rounded-md border border-solid border-gray-700 h-full flex flex-col">
+  <TempStats metrics={metrics} />
+</section>
     </>
   );
 }
