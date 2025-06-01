@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import _ from "lodash";
 
+import iconMap from "@/utils/iconMap";
+
 const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API;
 const CITY = process.env.NEXT_PUBLIC_CITY || "Burnham-on-Crouch,GB";
 
@@ -29,7 +31,7 @@ export default function WeatherTimeWidget() {
         .filter((item) => dayjs.unix(item.dt).isSame(now, "day"))
         .take(4)
         .map((f) => ({
-          icon: `wi wi-owm-${_.get(f, "weather[0].id", "800")}`,
+icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
           temp: _.round(_.get(f, "main.temp", 0)),
           time: dayjs.unix(f.dt).format("HH:mm"),
         }))
@@ -40,7 +42,7 @@ export default function WeatherTimeWidget() {
       );
 
       const forecastTomorrow = {
-        icon: `wi wi-owm-${_.get(tomorrowChunk, "weather[0].id", "800")}`,
+  icon: `wi ${iconMap[_.get(tomorrowChunk, "weather[0].icon", "01d")] || "wi-na"}`,
         temp: _.round(_.get(tomorrowChunk, "main.temp", 10)),
         desc: `${_.get(tomorrowChunk, "rain.3h", 0)} mm Rain`,
         time: dayjs.unix(_.get(tomorrowChunk, "dt", now.unix())).format("HH:mm"),
@@ -57,7 +59,7 @@ export default function WeatherTimeWidget() {
         .map(([date, entries]) => ({
           day: dayjs(date).format("ddd"),
           temp: _.round(_.meanBy(entries, "main.temp")),
-          icon: `wi wi-owm-${_.get(_.first(entries), "weather[0].id", "800")}`,
+  icon: `wi ${iconMap[_.get(_.first(entries), "weather[0].icon", "01d")] || "wi-na"}`,
         }))
         .value();
 
@@ -67,7 +69,7 @@ export default function WeatherTimeWidget() {
         city: _.get(current, "name"),
         temp: _.round(_.get(current, "main.temp")),
         description: _.get(current, "weather[0].description", ""),
-        iconCode: _.get(current, "weather[0].id", "800"),
+iconCode: _.get(current, "weather[0].icon", "01d"),
         wind: _.get(current, "wind.speed", 0),
         rain: _.get(current, "rain.1h", 0),
         pressure: _.get(current, "main.pressure", 0),
@@ -95,7 +97,7 @@ export default function WeatherTimeWidget() {
   if (!weather) return <div className="text-center text-gray-500">Loading...</div>;
 
   return (
-    <div className="p-6 rounded-xl shadow bg-white text-gray-800 max-w-4xl mx-auto space-y-6">
+    <>
       {/* Date & Time */}
       <div className="text-center">
         <div className="text-xl font-semibold">{now.format("dddd, D MMMM YYYY")}</div>
@@ -109,7 +111,7 @@ export default function WeatherTimeWidget() {
           <div className="text-6xl font-bold">{weather.temp}°C</div>
           <div className="capitalize">{weather.description}</div>
         </div>
-        <i className={`wi wi-owm-${weather.iconCode} text-6xl`} />
+<i className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-6xl`} />
         <div className="text-sm text-left space-y-1">
           <div><i className="wi wi-humidity mr-1" /> {weather.humidity}% Humidity</div>
           <div><i className="wi wi-strong-wind mr-1" /> {weather.wind} m/s Wind</div>
@@ -158,6 +160,6 @@ export default function WeatherTimeWidget() {
           ))}
         </div>
       </div>
-    </div>
+    </>
   );
 }

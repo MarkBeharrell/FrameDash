@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchMetrics } from "@/lib/fetchMetrics"; 
+import { fetchMetrics } from "@/lib/fetchMetrics";
 
-export async function useLiveMetrics(pollInterval = 5000) {
-  const [metrics, setMetrics] = useState([]);
+export function useLiveMetrics(pollInterval = 100) {
+  const [metrics, setMetrics] = useState([]); 
   const seenTimestamps = useRef(new Set());
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export async function useLiveMetrics(pollInterval = 5000) {
       try {
         const newData = await fetchMetrics();
         if (!isMounted || !Array.isArray(newData)) return;
-        
+
         const fresh = newData.filter((entry) => {
           const time = new Date(entry.time).getTime();
           if (seenTimestamps.current.has(time)) return false;
@@ -30,7 +30,6 @@ export async function useLiveMetrics(pollInterval = 5000) {
       }
     };
 
-    // Initial call + interval setup
     poll();
     const intervalId = setInterval(poll, pollInterval);
 
