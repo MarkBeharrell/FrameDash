@@ -1,11 +1,13 @@
+'use client';
+
 import WeatherTimeWidget from "@/components/WeatherTimeWidget";
 import CpuStats from "@/components/CpuStats";
 import MemoryStats from "@/components/MemoryStats";
 import TempStats from "@/components/TempStats";
-import { fetchMetrics } from "@/lib/fetchMetrics";
+import { useLiveMetrics } from "@/lib/useLiveMetrics";
 
-export default async function DashboardPage() {
-  const metrics = await fetchMetrics();
+export default function DashboardPage() {
+  const metrics = useLiveMetrics(5000);
 
   return (
     <>

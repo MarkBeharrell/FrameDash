@@ -1,5 +1,8 @@
 export async function fetchMetrics() {
-  const res = await fetch("http://10.0.0.1:9103/metrics", { cache: "no-store" });
+
+    const res = await fetch("/api/metrics", { cache: "no-store" });
+
+  // const res = await fetch("http://10.0.0.1:9103/metrics", { cache: "no-store" });
   const text = await res.text();
   const lines = text.split("\n").filter(line => line.startsWith("collectd_") && !line.startsWith("#"));
 
