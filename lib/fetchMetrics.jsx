@@ -19,10 +19,8 @@ export async function fetchMetrics() {
       if (!match) return null;
 
       const [, type, labelsStr] = match;
-      // const labels = Object.fromEntries(
-      //   labelsStr.split(",").map(l => l.split("=").map(x => x.replace(/"/g, "")))
-      // );
-const labels = fromEntriesShim(
+
+      const labels = fromEntriesShim(
   labelsStr.split(",").map(l => l.split("=").map(x => x.replace(/"/g, "")))
 );
       return {
@@ -85,7 +83,7 @@ const labels = fromEntriesShim(
 
     return unified;
   } catch (error) {
-    console.error("🛑 fetchMetrics failed:", error.message);
+    console.error("fetchMetrics failed:", error.message);
     return [];
   }
 }

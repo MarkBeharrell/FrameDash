@@ -5,7 +5,6 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip,
   ResponsiveContainer,
 } from "recharts";
 import dayjs from "dayjs";

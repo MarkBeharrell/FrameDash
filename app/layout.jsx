@@ -11,15 +11,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-     
       <body className="bg-black text-white min-h-screen">
         <div className="min-h-screen flex flex-col">
 <main className="grid grid-cols-1 md:grid-cols-6 auto-rows-fr gap-6 p-6 text-white bg-black min-h-screen">
             {children}
           </main>
-          <footer className="text-center p-4 text-xs text-zinc-400">
-            &copy; {new Date().getFullYear()} Mark Beharrell
-          </footer>
         </div>
       </body>
     </html>

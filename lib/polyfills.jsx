@@ -11,3 +11,9 @@ import 'core-js/es/symbol';                 // Symbol
 import 'core-js/es/weak-map';               // WeakMap
 import 'core-js/es/weak-set';               // WeakSet
 import 'regenerator-runtime/runtime';       // async/await
+
+import ResizeObserver from "resize-observer-polyfill";
+
+if (typeof window !== "undefined" && !("ResizeObserver" in window)) {
+  window.ResizeObserver = ResizeObserver;
+}

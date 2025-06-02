@@ -8,9 +8,16 @@ import React from 'react';
 
 import iconMap from "@/utils/iconMap";
 
-const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API;
-const CITY = process.env.NEXT_PUBLIC_CITY || "Burnham-on-Crouch,GB";
+const API_KEY = "46cd22e08e095f49bf8689ebaa7c4b71";
+// typeof process !== "undefined" && process.env?.NEXT_PUBLIC_OPENWEATHER_API
+//   ? process.env.NEXT_PUBLIC_OPENWEATHER_API
+//   : "";
 
+const CITY = "Burnham-on-Crouch,GB";
+// typeof process !== "undefined" && process.env?.NEXT_PUBLIC_CITY
+//   ? process.env.NEXT_PUBLIC_CITY
+//   : "Burnham-on-Crouch,GB";
+  
 export default function WeatherTimeWidget() {
   const [weather, setWeather] = useState(null);
   const [now, setNow] = useState(dayjs());
