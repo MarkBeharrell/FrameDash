@@ -1,5 +1,6 @@
 // lib/polyfills.js
 
+import 'core-js/stable';
 import 'core-js/es/array/flat';             // Array.prototype.flat
 import 'core-js/es/array/includes';         // Array.prototype.includes
 import 'core-js/es/object/from-entries';    // Object.fromEntries

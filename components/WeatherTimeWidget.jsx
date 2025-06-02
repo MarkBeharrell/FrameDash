@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import _ from "lodash";
+import axios from "axios";
+import React from 'react';
 
 import iconMap from "@/utils/iconMap";
 
@@ -16,39 +18,39 @@ export default function WeatherTimeWidget() {
   const fetchWeather = async () => {
     try {
       const [currentRes, forecastRes] = await Promise.all([
-        fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric&lang=en`
-        ),
-        fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${CITY}&appid=${API_KEY}&units=metric&lang=en`
-        ),
+        axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
+          params: { q: CITY, appid: API_KEY, units: "metric", lang: "en" }
+        }),
+        axios.get(`https://api.openweathermap.org/data/2.5/forecast`, {
+          params: { q: CITY, appid: API_KEY, units: "metric", lang: "en" }
+        })
       ]);
 
-      const current = await currentRes.json();
-      const forecast = await forecastRes.json();
+      const current = currentRes.data;
+      const forecast = forecastRes.data;
 
       const forecastToday = _(forecast.list)
-        .filter((item) => dayjs.unix(item.dt).isSame(now, "day"))
+        .filter(item => dayjs.unix(item.dt).isSame(now, "day"))
         .take(4)
-        .map((f) => ({
-icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
+        .map(f => ({
+          icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
           temp: _.round(_.get(f, "main.temp", 0)),
           time: dayjs.unix(f.dt).format("HH:mm"),
         }))
         .value();
 
-      const tomorrowChunk = _.find(forecast.list, (item) =>
+      const tomorrowChunk = _.find(forecast.list, item =>
         dayjs.unix(item.dt).isSame(now.add(1, "day"), "day")
       );
 
       const forecastTomorrow = {
-  icon: `wi ${iconMap[_.get(tomorrowChunk, "weather[0].icon", "01d")] || "wi-na"}`,
+        icon: `wi ${iconMap[_.get(tomorrowChunk, "weather[0].icon", "01d")] || "wi-na"}`,
         temp: _.round(_.get(tomorrowChunk, "main.temp", 10)),
         desc: `${_.get(tomorrowChunk, "rain.3h", 0)} mm Rain`,
         time: dayjs.unix(_.get(tomorrowChunk, "dt", now.unix())).format("HH:mm"),
       };
 
-      const dailyGroups = _.groupBy(forecast.list, (entry) =>
+      const dailyGroups = _.groupBy(forecast.list, entry =>
         dayjs.unix(entry.dt).format("YYYY-MM-DD")
       );
 
@@ -59,7 +61,7 @@ icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
         .map(([date, entries]) => ({
           day: dayjs(date).format("ddd"),
           temp: _.round(_.meanBy(entries, "main.temp")),
-  icon: `wi ${iconMap[_.get(_.first(entries), "weather[0].icon", "01d")] || "wi-na"}`,
+          icon: `wi ${iconMap[_.get(_.first(entries), "weather[0].icon", "01d")] || "wi-na"}`,
         }))
         .value();
 
@@ -69,7 +71,7 @@ icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
         city: _.get(current, "name"),
         temp: _.round(_.get(current, "main.temp")),
         description: _.get(current, "weather[0].description", ""),
-iconCode: _.get(current, "weather[0].icon", "01d"),
+        iconCode: _.get(current, "weather[0].icon", "01d"),
         wind: _.get(current, "wind.speed", 0),
         rain: _.get(current, "rain.1h", 0),
         pressure: _.get(current, "main.pressure", 0),

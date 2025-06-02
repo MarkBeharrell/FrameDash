@@ -1,84 +1,98 @@
+import axios from "axios";
+
 export async function fetchMetrics() {
-  const res = await fetch("/api/metrics", { cache: "no-store" });
-  const text = await res.text();
+  try {
+    const res = await axios.get("/api/metrics", {
+      headers: { "Cache-Control": "no-store" },
+    });
 
-  const lines = text
-    .split("\n")
-    .filter(line => line.startsWith("collectd_") && !line.startsWith("#"));
+    const text = res.data;
 
-  const parsed = lines.map(line => {
-    const [metric, rawValue, timestampStr] = line.trim().split(/\s+/);
-    const timestamp = Number(timestampStr);
-    const match = metric.match(/collectd_(\w+)\{([^}]*)\}/);
-    if (!match) return null;
+    const lines = text
+      .split("\n")
+      .filter(line => line.startsWith("collectd_") && !line.startsWith("#"));
 
-    const [, type, labelsStr] = match;
-    const labels = Object.fromEntries(
-      labelsStr.split(",").map(l => l.split("=").map(x => x.replace(/"/g, "")))
-    );
+    const parsed = lines.map(line => {
+      const [metric, rawValue, timestampStr] = line.trim().split(/\s+/);
+      const timestamp = Number(timestampStr);
+      const match = metric.match(/collectd_(\w+)\{([^}]*)\}/);
+      if (!match) return null;
 
-    return {
-      type,
-      labels,
-      value: parseFloat(rawValue),
-      timestamp,
-    };
-  }).filter(Boolean);
+      const [, type, labelsStr] = match;
+      // const labels = Object.fromEntries(
+      //   labelsStr.split(",").map(l => l.split("=").map(x => x.replace(/"/g, "")))
+      // );
+const labels = fromEntriesShim(
+  labelsStr.split(",").map(l => l.split("=").map(x => x.replace(/"/g, "")))
+);
+      return {
+        type,
+        labels,
+        value: parseFloat(rawValue),
+        timestamp,
+      };
+    }).filter(Boolean);
 
-  // Group by minute-level timestamp
-  const grouped = new Map();
+    const grouped = new Map();
 
-  for (const metric of parsed) {
-    const { timestamp, type, value, labels } = metric;
+    for (const metric of parsed) {
+      const { timestamp, type, value, labels } = metric;
+      const minuteTimestamp = Math.floor(timestamp / 60000) * 60000;
 
-    // Normalize to the start of the minute
-    const minuteTimestamp = Math.floor(timestamp / 60000) * 60000;
-
-    if (!grouped.has(minuteTimestamp)) {
-      grouped.set(minuteTimestamp, {
-        cpuValues: [],
-        memUsed: null,
-        temps: [],
-        time: new Date(minuteTimestamp),
-      });
-    }
-
-    const group = grouped.get(minuteTimestamp);
-
-    if (type === "cpu_percent") {
-      if (labels.type === "user" || labels.type === "system") {
-        group.cpuValues.push(parseFloat(value.toFixed(1)));
+      if (!grouped.has(minuteTimestamp)) {
+        grouped.set(minuteTimestamp, {
+          cpuValues: [],
+          memUsed: null,
+          temps: [],
+          time: new Date(minuteTimestamp),
+        });
       }
-    }
 
-    if (type === "memory_percent" && labels.memory === "cached") {
-      group.memUsed = parseFloat(value.toFixed(1));
-    }
+      const group = grouped.get(minuteTimestamp);
 
-    if (type === "sensors_temperature") {
-      if (value > 0 && value < 150) {
+      if (type === "cpu_percent") {
+        if (labels.type === "user" || labels.type === "system") {
+          group.cpuValues.push(parseFloat(value.toFixed(1)));
+        }
+      }
+
+      if (type === "memory_percent" && labels.memory === "cached") {
+        group.memUsed = parseFloat(value.toFixed(1));
+      }
+
+      if (type === "sensors_temperature" && value > 0 && value < 150) {
         group.temps.push(parseFloat(value.toFixed(1)));
       }
     }
+
+    const unified = [];
+    for (const [, entry] of grouped) {
+      const cpuUsage = entry.cpuValues.length > 0
+        ? entry.cpuValues.reduce((a, b) => a + b, 0) / entry.cpuValues.length
+        : null;
+
+      const avgTemp = entry.temps.length > 0
+        ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length
+        : null;
+
+      unified.push({
+        time: entry.time,
+        cpuUsage,
+        memoryUsed: entry.memUsed,
+        avgTemp,
+      });
+    }
+
+    return unified;
+  } catch (error) {
+    console.error("🛑 fetchMetrics failed:", error.message);
+    return [];
   }
+}
 
-  const unified = [];
-  for (const [, entry] of grouped) {
-    const cpuUsage = entry.cpuValues.length > 0
-      ? entry.cpuValues.reduce((a, b) => a + b, 0) / entry.cpuValues.length
-      : null;
-
-    const avgTemp = entry.temps.length > 0
-      ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length
-      : null;
-
-    unified.push({
-      time: entry.time,
-      cpuUsage,
-      memoryUsed: entry.memUsed,
-      avgTemp,
-    });
-  }
-
-  return unified;
+function fromEntriesShim(iterable) {
+  return [...iterable].reduce((obj, [key, val]) => {
+    obj[key] = val;
+    return obj;
+  }, {});
 }

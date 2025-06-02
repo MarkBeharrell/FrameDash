@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import dayjs from "dayjs";
+import React from 'react';
 
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;

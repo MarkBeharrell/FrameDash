@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import dayjs from "dayjs";
+import React from 'react';
 
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;

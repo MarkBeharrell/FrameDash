@@ -1,10 +1,12 @@
 'use client';
+import "@/lib/polyfills"; 
 
 import WeatherTimeWidget from "@/components/WeatherTimeWidget";
 import CpuStats from "@/components/CpuStats";
 import MemoryStats from "@/components/MemoryStats";
 import TempStats from "@/components/TempStats";
 import { useLiveMetrics } from "@/lib/useLiveMetrics";
+import React from 'react';
 
 export default function DashboardPage() {
   const metrics = useLiveMetrics(5000);
