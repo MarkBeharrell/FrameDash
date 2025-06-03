@@ -14,27 +14,22 @@ export default function CpuStats({ metrics }) {
       timeLabel: dayjs(entry.time).format("HH:mm"),
     }));
 
-
-
-
-
-
   return (
     <>
-      <h2 className="text-xl font-bold mb-2">CPU Usage</h2>
+      <h2 className="text-xl font-medium mb-2 text-gray-600">CPU Usage</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
             dataKey="timeLabel"
-            stroke="#ccc"
-            tick={{ fill: "#ccc", fontSize: 13 }}
+            stroke="#888"
+            tick={{ fill: "#888", fontSize: 13 }}
             tickMargin={12}
             padding={{ left: 5, right: 0 }}
           />
           <YAxis
             width={40}
             domain={["auto", "auto"]}
-            tick={{ fill: "#ccc", fontSize: 13 }}
+            tick={{ fill: "#888", fontSize: 13 }}
             tickFormatter={(value) => value.toFixed(2)}
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
@@ -56,6 +51,15 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 

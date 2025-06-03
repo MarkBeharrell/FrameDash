@@ -16,20 +16,20 @@ export default function MemoryStats({ metrics }) {
 
   return (
     <>
-      <h2 className="text-xl font-bold mb-2">Memory Usage</h2>
+      <h2 className="text-xl font-medium mb-2 text-gray-600">Memory Usage</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
             dataKey="timeLabel"
-            stroke="#ccc"
-            tick={{ fill: "#ccc", fontSize: 13 }}
+            stroke="#888"
+            tick={{ fill: "#888", fontSize: 13 }}
             tickMargin={12}
             padding={{ left: 5, right: 0 }}
           />
           <YAxis
             width={40}
             domain={["auto", "auto"]}
-            tick={{ fill: "#ccc", fontSize: 13 }}
+            tick={{ fill: "#888", fontSize: 13 }}
             tickMargin={8}
             tickFormatter={(value) => value.toFixed(1)}
             padding={{ top: 5, bottom: 5 }}
@@ -51,4 +51,5 @@ export default function MemoryStats({ metrics }) {
     </>
   );
 }
+
 

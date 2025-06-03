@@ -3,10 +3,10 @@ import "../node_modules/weather-icons/css/weather-icons.css";
 import "../node_modules/weather-icons/css/weather-icons.min.css";
 import React from "react";
 
-export const metadata = {
-  title: "FrameDash",
-  description: "Minimal weather and metrics dashboard for the wall!"
-};
+// export const metadata = {
+//   title: "FrameDash",
+//   description: "Minimal weather and metrics dashboard for the wall!"
+// };
 
 export default function RootLayout({ children }) {
   return (

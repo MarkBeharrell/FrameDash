@@ -4,19 +4,12 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import _ from "lodash";
 import axios from "axios";
-import React from 'react';
+import React from "react";
 
 import iconMap from "@/utils/iconMap";
 
 const API_KEY = "46cd22e08e095f49bf8689ebaa7c4b71";
-// typeof process !== "undefined" && process.env?.NEXT_PUBLIC_OPENWEATHER_API
-//   ? process.env.NEXT_PUBLIC_OPENWEATHER_API
-//   : "";
-
 const CITY = "Burnham-on-Crouch,GB";
-// typeof process !== "undefined" && process.env?.NEXT_PUBLIC_CITY
-//   ? process.env.NEXT_PUBLIC_CITY
-//   : "Burnham-on-Crouch,GB";
 
 export default function WeatherTimeWidget() {
   const [weather, setWeather] = useState(null);
@@ -37,16 +30,16 @@ export default function WeatherTimeWidget() {
       const forecast = forecastRes.data;
 
       const forecastToday = _(forecast.list)
-        .filter(item => dayjs.unix(item.dt).isSame(now, "day"))
+        .filter((item) => dayjs.unix(item.dt).isSame(now, "day"))
         .take(4)
-        .map(f => ({
+        .map((f) => ({
           icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
           temp: _.round(_.get(f, "main.temp", 0)),
-          time: dayjs.unix(f.dt).format("HH:mm"),
+          time: dayjs.unix(f.dt).format("HH:mm")
         }))
         .value();
 
-      const tomorrowChunk = _.find(forecast.list, item =>
+      const tomorrowChunk = _.find(forecast.list, (item) =>
         dayjs.unix(item.dt).isSame(now.add(1, "day"), "day")
       );
 
@@ -54,10 +47,10 @@ export default function WeatherTimeWidget() {
         icon: `wi ${iconMap[_.get(tomorrowChunk, "weather[0].icon", "01d")] || "wi-na"}`,
         temp: _.round(_.get(tomorrowChunk, "main.temp", 10)),
         desc: `${_.get(tomorrowChunk, "rain.3h", 0)} mm Rain`,
-        time: dayjs.unix(_.get(tomorrowChunk, "dt", now.unix())).format("HH:mm"),
+        time: dayjs.unix(_.get(tomorrowChunk, "dt", now.unix())).format("HH:mm")
       };
 
-      const dailyGroups = _.groupBy(forecast.list, entry =>
+      const dailyGroups = _.groupBy(forecast.list, (entry) =>
         dayjs.unix(entry.dt).format("YYYY-MM-DD")
       );
 
@@ -68,7 +61,7 @@ export default function WeatherTimeWidget() {
         .map(([date, entries]) => ({
           day: dayjs(date).format("ddd"),
           temp: _.round(_.meanBy(entries, "main.temp")),
-          icon: `wi ${iconMap[_.get(_.first(entries), "weather[0].icon", "01d")] || "wi-na"}`,
+          icon: `wi ${iconMap[_.get(_.first(entries), "weather[0].icon", "01d")] || "wi-na"}`
         }))
         .value();
 
@@ -86,7 +79,7 @@ export default function WeatherTimeWidget() {
         aqi: "Good",
         forecastToday,
         forecastTomorrow,
-        forecast5Day,
+        forecast5Day
       });
     } catch (err) {
       console.error("Weather fetch failed:", err);
@@ -103,68 +96,79 @@ export default function WeatherTimeWidget() {
     };
   }, []);
 
-  if (!weather) return <div className="text-center text-gray-500">Loading...</div>;
+  if (!weather)
+    return <div className="text-center text-gray-500">Loading...</div>;
 
   return (
     <>
-      {/* Date & Time */}
-      <div className="text-center">
-        <div className="text-xl font-semibold">{now.format("dddd, D MMMM YYYY")}</div>
-        <div className="text-4xl font-bold">{now.format("HH:mm:ss")}</div>
-      </div>
-
-      {/* Current Weather */}
-      <div className="flex justify-around items-center text-xl">
-        <div className="text-center">
-          <div className="text-lg">{weather.city}</div>
-          <div className="text-6xl font-bold">{weather.temp}°C</div>
-          <div className="capitalize">{weather.description}</div>
+      {/* Top Section: Date Icon Temp */}
+      <div className="grid grid-cols-3 items-center mb-4 gap-8">
+        <div className="flex flex-col text-right">
+          <div className="text-2xl text-gray-500">
+            {now.format("dddd")}
+            <br />
+            {now.format("D MMMM YYYY")}
+          </div>
+          <div className="text-4xl font-semibold">{now.format("HH:mm")}</div>
         </div>
-<i className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-6xl`} />
-        <div className="text-sm text-left space-y-1">
-          <div><i className="wi wi-humidity mr-1" /> {weather.humidity}% Humidity</div>
-          <div><i className="wi wi-strong-wind mr-1" /> {weather.wind} m/s Wind</div>
-          <div><i className="wi wi-raindrop mr-1" /> {weather.rain} mm Rain</div>
-          <div><i className="wi wi-barometer mr-1" /> {weather.pressure} hPa</div>
-          <div><i className="wi wi-sunrise mr-1" /> {weather.sunrise}</div>
-          <div><i className="wi wi-sunset mr-1" /> {weather.sunset}</div>
-        </div>
-      </div>
 
-      {/* Today Forecast */}
-      <div>
-        <div className="text-sm font-medium text-gray-700 mb-1">Later Today:</div>
-        <div className="flex justify-around items-center text-sm">
-          {weather.forecastToday.map((f, i) => (
-            <div key={i} className="flex flex-col items-center mx-2">
-              <div>{f.time}</div>
-              <i className={`${f.icon} text-2xl`} />
-              <div>{f.temp}°</div>
-            </div>
-          ))}
+        {/* Center: Icon + Description */}
+        <div className="flex flex-col justify-center items-center h-full">
+          <div className="w-[9rem] h-[6rem] text-center">
+            <i
+              className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-9xl`}
+            />
+          </div>
+          <div className="text-center capitalize text-lg text-gray-500 w-full mt-5">
+            {weather.description}
+          </div>
+        </div>
+
+        {/* Right: Temperature */}
+        <div className="flex flex-row font-normal text-left">
+          <span className="text-7xl">{weather.temp}</span>
+          <span className="text-3xl text-gray-400">°C</span>
         </div>
       </div>
 
-      {/* Tomorrow */}
-      <div>
-        <div className="text-sm font-medium text-gray-700 mb-1">Tomorrow:</div>
-        <div className="flex justify-start gap-4 items-center text-sm">
-          <i className={`${weather.forecastTomorrow.icon} text-2xl`} />
-          <div className="text-sm">{weather.forecastTomorrow.desc}</div>
-          <div className="text-lg font-bold">{weather.forecastTomorrow.temp}°C</div>
-          <div>{weather.forecastTomorrow.time}</div>
+
+      {/* Conditions Row */}
+      <div className="flex flex-row items-center gap-6 text-xl justify-center mb-4">
+        <div>
+          <i className="wi wi-humidity mr-1" /> {weather.humidity}
+          <span className="text-gray-500">% </span>
+        </div>
+        <div>
+          <i className="wi wi-strong-wind mr-1" />
+          {weather.wind}
+          <span className="text-gray-500">m/s </span>
+        </div>
+        <div>
+          <i className="wi wi-raindrop mr-1" /> {weather.rain}
+          <span className="text-gray-500">mm </span>
+        </div>
+        <div>
+          <i className="wi wi-sunrise mr-1" /> {weather.sunrise}
+        </div>
+        <div>
+          <i className="wi wi-sunset mr-1" /> {weather.sunset}
         </div>
       </div>
 
-      {/* 5 Day Outlook */}
-      <div>
-        <div className="text-sm font-medium text-gray-700 mb-1">5-Day Outlook:</div>
-        <div className="flex justify-around items-center text-sm">
+      {/* 5-Day Outlook */}
+      <div className="flex flex-col items-center text-sm justify-center">
+        <div className="text-lg font-medium text-gray-500 mb-3">
+          5-Day Outlook:
+        </div>
+        <div className="flex justify-around text-xl gap-4">
           {weather.forecast5Day.map((f, i) => (
-            <div key={i} className="flex flex-col items-center mx-2">
+            <div key={i} className="flex flex-row items-center mx-1 gap-2">
               <div className="font-medium">{f.day}</div>
               <i className={`${f.icon} text-xl`} />
-              <div>{f.temp}°</div>
+              <div>
+                {f.temp}
+                <span className="text-gray-500">°</span>
+              </div>
             </div>
           ))}
         </div>
@@ -172,6 +176,15 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 
