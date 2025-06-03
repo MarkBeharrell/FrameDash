@@ -1,14 +1,8 @@
 "use client";
 
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import dayjs from "dayjs";
-import React from 'react';
+import React from "react";
 
 export default function TemperatureStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No temperature data available.</p>;
@@ -23,13 +17,23 @@ export default function TemperatureStats({ metrics }) {
   return (
     <>
       <h2 className="text-xl font-bold mb-2">Average Temperature</h2>
-      <ResponsiveContainer width="100%"  height="100%">
-         <LineChart data={chartData}      >
-          <XAxis dataKey="timeLabel" stroke="#ccc" tick={{ fill: "#ccc", fontSize: 13 }}tickMargin={12}
-      padding={{ left: 0, right: 5 }}/>
-          <YAxis width={40}  domain={["auto", "auto"]} tick={{ fill: "#ccc" , fontSize: 13 }}  
-           tickFormatter={(value) => value.toFixed(1)} padding={{ top: 5, bottom: 5 }} tickMargin={8}
-/>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData}>
+          <XAxis
+            dataKey="timeLabel"
+            stroke="#ccc"
+            tick={{ fill: "#ccc", fontSize: 13 }}
+            tickMargin={12}
+            padding={{ left: 0, right: 5 }}
+          />
+          <YAxis
+            width={40}
+            domain={["auto", "auto"]}
+            tick={{ fill: "#ccc", fontSize: 13 }}
+            tickFormatter={(value) => value.toFixed(1)}
+            padding={{ top: 5, bottom: 5 }}
+            tickMargin={8}
+          />
           {/* <Tooltip
             formatter={(value) => `${value.toFixed(2)}°C`}
             labelFormatter={(label) => `Time: ${label}`}
@@ -47,3 +51,6 @@ export default function TemperatureStats({ metrics }) {
     </>
   );
 }
+
+
+

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { fetchMetrics } from "@/lib/fetchMetrics";
 
 export function useLiveMetrics(pollInterval = 10000) {
-  const [metrics, setMetrics] = useState([]); 
+  const [metrics, setMetrics] = useState([]);
   const seenTimestamps = useRef(new Set());
 
   useEffect(() => {

@@ -17,7 +17,7 @@ const CITY = "Burnham-on-Crouch,GB";
 // typeof process !== "undefined" && process.env?.NEXT_PUBLIC_CITY
 //   ? process.env.NEXT_PUBLIC_CITY
 //   : "Burnham-on-Crouch,GB";
-  
+
 export default function WeatherTimeWidget() {
   const [weather, setWeather] = useState(null);
   const [now, setNow] = useState(dayjs());
@@ -172,3 +172,6 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
+
+
+

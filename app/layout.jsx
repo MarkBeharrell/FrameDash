@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
-import '../node_modules/weather-icons/css/weather-icons.css';
-import '../node_modules/weather-icons/css/weather-icons.min.css';
-import React from 'react';
+import "../node_modules/weather-icons/css/weather-icons.css";
+import "../node_modules/weather-icons/css/weather-icons.min.css";
+import React from "react";
 
 export const metadata = {
   title: "FrameDash",
@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="bg-black text-white min-h-screen">
         <div className="min-h-screen flex flex-col">
-<main className="grid grid-cols-1 md:grid-cols-6 auto-rows-fr gap-6 p-6 text-white bg-black min-h-screen">
+          <main className="grid grid-cols-1 md:grid-cols-6 auto-rows-fr gap-6 p-6 text-white bg-black min-h-screen">
             {children}
           </main>
         </div>
@@ -21,3 +21,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

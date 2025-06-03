@@ -3,6 +3,26 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
-    }
-  }
+    },
+    "jsx": "react-jsx", // Specifies React JSX runtime
+    "checkJs": true, // Enables type checking in JavaScript files
+    "allowSyntheticDefaultImports": true, // Simplifies default imports in JavaScript
+    "noImplicitAny": false, // Ensures explicit typing for `any`
+    "strict": false, // Enables strict type checking
+    "strictNullChecks": false, // Ensures null and undefined are handled explicitly
+    "strictPropertyInitialization": false, // Enforces initialization of class properties
+    "skipLibCheck": true, // Skips type checking for dependencies for performance
+    "noEmit": true // Prevents emitting compiled files (handled by your build tool)
+  },
+  "include": ["**/*.js", "**/*.jsx", "eslint.config.mjs"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "out",
+    "**/*.test.js",
+    "**/*.min.js",
+    "**/*.map.js",
+    "public/**",
+    "public/diagram/**"
+  ]
 }

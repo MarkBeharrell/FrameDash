@@ -1,15 +1,15 @@
 module.exports = {
   presets: [
     [
-      '@babel/preset-env',
+      "@babel/preset-env",
       {
         targets: {
-          ios: '12',
+          ios: "12",
         },
-        useBuiltIns: 'entry',
+        useBuiltIns: "entry",
         corejs: 3,
       },
     ],
-    '@babel/preset-react',
+    "@babel/preset-react",
   ],
 };

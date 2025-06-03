@@ -1,0 +1,33 @@
+# Ignore all generated and cache folders
+public/*
+obj/*
+.vs/*
+.next/*
+.vscode/*
+App_Data/*
+node_modules/
+dist/
+public/diagram/*
+
+# Ignore common config and environment files
+# .prettierrc
+# .prettierignore
+# .editorconfig
+# .env
+# .gitignore
+# .hintrc
+# .deployment
+
+# Ignore manifest and JSON configuration files
+*.webmanifest
+
+# Ignore JavaScript and XML files
+*.min.js
+*.xml
+*.esproj
+*.esproj.user
+
+# Ignore image and style files
+*.png
+*.ico
+*.svg

@@ -10,26 +10,28 @@ export async function fetchMetrics() {
 
     const lines = text
       .split("\n")
-      .filter(line => line.startsWith("collectd_") && !line.startsWith("#"));
+      .filter((line) => line.startsWith("collectd_") && !line.startsWith("#"));
 
-    const parsed = lines.map(line => {
-      const [metric, rawValue, timestampStr] = line.trim().split(/\s+/);
-      const timestamp = Number(timestampStr);
-      const match = metric.match(/collectd_(\w+)\{([^}]*)\}/);
-      if (!match) return null;
+    const parsed = lines
+      .map((line) => {
+        const [metric, rawValue, timestampStr] = line.trim().split(/\s+/);
+        const timestamp = Number(timestampStr);
+        const match = metric.match(/collectd_(\w+)\{([^}]*)\}/);
+        if (!match) return null;
 
-      const [, type, labelsStr] = match;
+        const [, type, labelsStr] = match;
 
-      const labels = fromEntriesShim(
-  labelsStr.split(",").map(l => l.split("=").map(x => x.replace(/"/g, "")))
-);
-      return {
-        type,
-        labels,
-        value: parseFloat(rawValue),
-        timestamp,
-      };
-    }).filter(Boolean);
+        const labels = fromEntriesShim(
+          labelsStr.split(",").map((l) => l.split("=").map((x) => x.replace(/"/g, "")))
+        );
+        return {
+          type,
+          labels,
+          value: parseFloat(rawValue),
+          timestamp,
+        };
+      })
+      .filter(Boolean);
 
     const grouped = new Map();
 
@@ -65,13 +67,13 @@ export async function fetchMetrics() {
 
     const unified = [];
     for (const [, entry] of grouped) {
-      const cpuUsage = entry.cpuValues.length > 0
-        ? entry.cpuValues.reduce((a, b) => a + b, 0) / entry.cpuValues.length
-        : null;
+      const cpuUsage =
+        entry.cpuValues.length > 0
+          ? entry.cpuValues.reduce((a, b) => a + b, 0) / entry.cpuValues.length
+          : null;
 
-      const avgTemp = entry.temps.length > 0
-        ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length
-        : null;
+      const avgTemp =
+        entry.temps.length > 0 ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length : null;
 
       unified.push({
         time: entry.time,
@@ -94,3 +96,6 @@ function fromEntriesShim(iterable) {
     return obj;
   }, {});
 }
+
+
+
