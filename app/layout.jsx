@@ -4,6 +4,17 @@ import { WeatherProvider, useWeather } from "@/lib/weatherContext";
 import "@/styles/globals.css";
 import React, { useState } from "react";
 
+/* eslint-disable no-unused-vars */
+const metadata = {
+  title: "FrameDash",
+  description: "Minimal fullscreen app",
+  appleWebApp: {
+    capable: true,
+    title: "FrameDash",
+    statusBarStyle: "black-translucent"
+  }
+};
+
 function ThemedBody({ children }) {
   const { weather } = useWeather();
   const [autoDark, setAutoDark] = useState(true); // determines if auto mode is active

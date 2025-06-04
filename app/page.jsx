@@ -8,16 +8,6 @@ import WeatherTimeWidget from "@/components/WeatherTimeWidget";
 import { useLiveMetrics } from "@/lib/useLiveMetrics";
 import React from "react";
 
-export const metadata = {
-  title: "FrameDash",
-  description: "Minimal fullscreen app",
-  appleWebApp: {
-    capable: true,
-    title: "FrameDash",
-    statusBarStyle: "black-translucent"
-  }
-};
-
 export default function DashboardPage() {
   const metrics = useLiveMetrics(5000);
 
@@ -41,6 +31,3 @@ export default function DashboardPage() {
     </>
   );
 }
-
-
-

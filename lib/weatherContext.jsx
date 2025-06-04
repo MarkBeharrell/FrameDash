@@ -132,4 +132,3 @@ export const WeatherProvider = ({ children }) => {
 };
 
 export const useWeather = () => useContext(WeatherContext);
-
