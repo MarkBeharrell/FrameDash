@@ -1,7 +1,7 @@
 export async function GET() {
   try {
     const res = await fetch("http://10.0.0.1:9103/metrics", {
-      cache: "no-store",
+      cache: "no-store"
     });
 
     if (!res.ok) {
@@ -14,10 +14,10 @@ export async function GET() {
       headers: {
         "Content-Type": "text/plain",
         "Cache-Control": "no-store",
-        "Access-Control-Allow-Origin": "*", // Optional if you want to call this from other domains
-      },
+        "Access-Control-Allow-Origin": "*"
+      }
     });
   } catch (error) {
-    return new Response("Error contacting collectd", { status: 500 });
+    return new Response("Error contacting collectd: " + error, { status: 500 });
   }
 }

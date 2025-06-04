@@ -3,7 +3,7 @@ import axios from "axios";
 export async function fetchMetrics() {
   try {
     const res = await axios.get("/api/metrics", {
-      headers: { "Cache-Control": "no-store" },
+      headers: { "Cache-Control": "no-store" }
     });
 
     const text = res.data;
@@ -22,13 +22,15 @@ export async function fetchMetrics() {
         const [, type, labelsStr] = match;
 
         const labels = fromEntriesShim(
-          labelsStr.split(",").map((l) => l.split("=").map((x) => x.replace(/"/g, "")))
+          labelsStr
+            .split(",")
+            .map((l) => l.split("=").map((x) => x.replace(/"/g, "")))
         );
         return {
           type,
           labels,
           value: parseFloat(rawValue),
-          timestamp,
+          timestamp
         };
       })
       .filter(Boolean);
@@ -44,7 +46,7 @@ export async function fetchMetrics() {
           cpuValues: [],
           memUsed: null,
           temps: [],
-          time: new Date(minuteTimestamp),
+          time: new Date(minuteTimestamp)
         });
       }
 
@@ -73,13 +75,15 @@ export async function fetchMetrics() {
           : null;
 
       const avgTemp =
-        entry.temps.length > 0 ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length : null;
+        entry.temps.length > 0
+          ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length
+          : null;
 
       unified.push({
         time: entry.time,
         cpuUsage,
         memoryUsed: entry.memUsed,
-        avgTemp,
+        avgTemp
       });
     }
 
@@ -96,6 +100,3 @@ function fromEntriesShim(iterable) {
     return obj;
   }, {});
 }
-
-
-

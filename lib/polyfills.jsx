@@ -18,4 +18,3 @@ if (typeof window !== "undefined" && !("ResizeObserver" in window)) {
   // @ts-ignore
   window.ResizeObserver = ResizeObserver;
 }
-

@@ -16,7 +16,7 @@ const iconMap = {
   "13d": "wi-snow",
   "13n": "wi-snow",
   "50d": "wi-fog",
-  "50n": "wi-fog",
+  "50n": "wi-fog"
 };
 
 export default iconMap;

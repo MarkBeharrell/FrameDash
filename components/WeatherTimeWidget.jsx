@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import _ from "lodash";
 import axios from "axios";
-import React from "react";
 
 import iconMap from "@/utils/iconMap";
 
@@ -15,7 +14,7 @@ export default function WeatherTimeWidget() {
   const [weather, setWeather] = useState(null);
   const [now, setNow] = useState(dayjs());
 
-  const fetchWeather = async () => {
+  const fetchWeather = useCallback(async () => {
     try {
       const [currentRes, forecastRes] = await Promise.all([
         axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
@@ -84,7 +83,7 @@ export default function WeatherTimeWidget() {
     } catch (err) {
       console.error("Weather fetch failed:", err);
     }
-  };
+  }, [now]);
 
   useEffect(() => {
     fetchWeather();
@@ -94,7 +93,7 @@ export default function WeatherTimeWidget() {
       clearInterval(interval);
       clearInterval(timeUpdater);
     };
-  }, []);
+  }, [fetchWeather]);
 
   if (!weather)
     return <div className="text-center text-gray-500">Loading...</div>;
@@ -102,7 +101,7 @@ export default function WeatherTimeWidget() {
   return (
     <>
       {/* Top Section: Date Icon Temp */}
-      <div className="grid grid-cols-3 items-center mb-4 gap-8">
+      <div className="mb-4 flex items-center justify-between space-x-8">
         <div className="flex flex-col text-right">
           <div className="text-2xl text-gray-500">
             {now.format("dddd")}
@@ -113,56 +112,75 @@ export default function WeatherTimeWidget() {
         </div>
 
         {/* Center: Icon + Description */}
-        <div className="flex flex-col justify-center items-center h-full">
-          <div className="w-[9rem] h-[6rem] text-center">
-            <i
-              className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-9xl`}
-            />
+        <div className="flex h-full flex-col items-center justify-center">
+          <div className="flex h-[180px] w-[180px] items-center justify-center">
+            <i className="wi wi-day-sunny text-9xl"></i>
           </div>
-          <div className="text-center capitalize text-lg text-gray-500 w-full mt-5">
+          <div className="w-full text-center text-lg capitalize text-gray-500">
             {weather.description}
           </div>
         </div>
 
         {/* Right: Temperature */}
-        <div className="flex flex-row font-normal text-left">
+        <div className="flex flex-row text-left font-normal">
           <span className="text-7xl">{weather.temp}</span>
           <span className="text-3xl text-gray-400">°C</span>
         </div>
       </div>
 
-
       {/* Conditions Row */}
-      <div className="flex flex-row items-center gap-6 text-xl justify-center mb-4">
+      <div className="mb-4 flex flex-row items-center justify-between space-x-8 text-xl">
         <div>
-          <i className="wi wi-humidity mr-1" /> {weather.humidity}
+          <i
+            className="wi wi-humidity mr-1"
+            style={{ fontFamily: "WeatherIcons" }}
+          />{" "}
+          {weather.humidity}
           <span className="text-gray-500">% </span>
         </div>
         <div>
-          <i className="wi wi-strong-wind mr-1" />
+          <i
+            className="wi wi-strong-wind mr-1"
+            style={{ fontFamily: "WeatherIcons" }}
+          />
           {weather.wind}
           <span className="text-gray-500">m/s </span>
         </div>
         <div>
-          <i className="wi wi-raindrop mr-1" /> {weather.rain}
+          <i
+            className="wi wi-raindrop mr-1"
+            style={{ fontFamily: "WeatherIcons" }}
+          />{" "}
+          {weather.rain}
           <span className="text-gray-500">mm </span>
         </div>
         <div>
-          <i className="wi wi-sunrise mr-1" /> {weather.sunrise}
+          <i
+            className="wi wi-sunrise mr-1"
+            style={{ fontFamily: "WeatherIcons" }}
+          />{" "}
+          {weather.sunrise}
         </div>
         <div>
-          <i className="wi wi-sunset mr-1" /> {weather.sunset}
+          <i
+            className="wi wi-sunset mr-1"
+            style={{ fontFamily: "WeatherIcons" }}
+          />{" "}
+          {weather.sunset}
         </div>
       </div>
 
       {/* 5-Day Outlook */}
-      <div className="flex flex-col items-center text-sm justify-center">
-        <div className="text-lg font-medium text-gray-500 mb-3">
+      <div className="flex flex-col items-center justify-center text-sm">
+        <div className="mb-2 text-lg font-medium text-gray-500">
           5-Day Outlook:
         </div>
-        <div className="flex justify-around text-xl gap-4">
+        <div className="mb-4 flex flex-row items-center justify-between space-x-8 text-xl">
           {weather.forecast5Day.map((f, i) => (
-            <div key={i} className="flex flex-row items-center mx-1 gap-2">
+            <div
+              key={i}
+              className="mx-1 flex flex-row items-center justify-between space-x-6"
+            >
               <div className="font-medium">{f.day}</div>
               <i className={`${f.icon} text-xl`} />
               <div>
@@ -176,15 +194,4 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
 

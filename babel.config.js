@@ -4,12 +4,12 @@ module.exports = {
       "@babel/preset-env",
       {
         targets: {
-          ios: "12",
+          ios: "12"
         },
         useBuiltIns: "entry",
-        corejs: 3,
-      },
+        corejs: 3
+      }
     ],
-    "@babel/preset-react",
-  ],
+    "@babel/preset-react"
+  ]
 };

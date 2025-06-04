@@ -1,12 +1,15 @@
 @import "./resets.css";
 
+@import "./weather-icons.min.css";
+@import "./weather-icons-wind.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @font-face {
   font-family: "Inter";
-  src: url("/fonts/Inter-VariableFont.ttf") format("truetype");
+  src: url("/font/Inter-VariableFont.ttf") format("truetype");
   font-weight: 100 900;
   font-display: swap;
   font-style: normal;
@@ -20,7 +23,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
-  @apply bg-white text-gray-800 font-sans;
+  @apply bg-white font-sans text-gray-800;
   font-family: "Inter";
 }
 /* Element enhancements */
@@ -42,7 +45,7 @@ a {
 }
 
 code {
-  @apply font-mono text-sm bg-zinc-800 px-1 py-0.5 rounded;
+  @apply rounded bg-zinc-800 px-1 py-0.5 font-mono text-sm;
 }
 
 /* Scrollbar theming */
@@ -52,7 +55,7 @@ code {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-600 rounded;
+  @apply rounded bg-zinc-600;
 }
 
 ::-webkit-scrollbar-track {

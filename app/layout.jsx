@@ -1,6 +1,4 @@
 import "@/styles/globals.css";
-import "../node_modules/weather-icons/css/weather-icons.css";
-import "../node_modules/weather-icons/css/weather-icons.min.css";
 import React from "react";
 
 export const metadata = {
@@ -11,9 +9,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-black text-white min-h-screen">
-        <div className="min-h-screen flex flex-col">
-          <main className="grid grid-cols-1 md:grid-cols-6 auto-rows-fr gap-6 p-6 text-white bg-black min-h-screen">
+      <body className="min-h-screen bg-black text-white">
+        <div className="flex min-h-screen flex-col">
+          <main className="grid min-h-screen auto-rows-fr grid-cols-1 gap-6 bg-black p-6 text-white md:grid-cols-6">
             {children}
           </main>
         </div>

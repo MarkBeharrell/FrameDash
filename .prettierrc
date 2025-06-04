@@ -14,5 +14,6 @@
   "quoteProps": "as-needed",
   "trailingComma": "none",
   "jsxSingleQuote": false,
-  "vueIndentScriptAndStyle": false
+  "vueIndentScriptAndStyle": false,
+  "plugins": ["prettier-plugin-tailwindcss"]
 }

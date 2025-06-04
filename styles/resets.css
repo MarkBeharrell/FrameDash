@@ -1,7 +1,9 @@
 /* modern-css-reset by Andy Bell - https://github.com/hankchizljaw/modern-css-reset */
 
 /* Reset box sizing and remove default margin/padding */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -11,8 +13,8 @@
 }
 
 /* Remove list styles on ul, ol elements with a list role */
-ul[role='list'],
-ol[role='list'] {
+ul[role="list"],
+ol[role="list"] {
   list-style: none;
 }
 
@@ -21,7 +23,8 @@ html:focus-within {
   scroll-behavior: smooth;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   text-rendering: optimizeSpeed;
   font-family: system-ui, sans-serif;

@@ -11,12 +11,12 @@ export default function CpuStats({ metrics }) {
     .filter((m) => typeof m.cpuUsage === "number")
     .map((entry) => ({
       ...entry,
-      timeLabel: dayjs(entry.time).format("HH:mm"),
+      timeLabel: dayjs(entry.time).format("HH:mm")
     }));
 
   return (
     <>
-      <h2 className="text-xl font-medium mb-2 text-gray-600">CPU Usage</h2>
+      <h2 className="mb-2 text-xl font-medium text-gray-600">CPU Usage</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
@@ -51,20 +51,3 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
