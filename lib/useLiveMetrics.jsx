@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { fetchMetrics } from "@/lib/fetchMetrics";
+import { useEffect, useRef, useState } from "react";
 
 export function useLiveMetrics(pollInterval = 10000) {
   const [metrics, setMetrics] = useState([]);

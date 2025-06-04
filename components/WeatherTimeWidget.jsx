@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import dayjs from "dayjs";
 import _ from "lodash";
-import axios from "axios";
+import React, { useCallback, useEffect, useState } from "react";
 
 import iconMap from "@/utils/iconMap";
 
@@ -134,7 +134,7 @@ export default function WeatherTimeWidget() {
           <i
             className="wi wi-humidity mr-1"
             style={{ fontFamily: "WeatherIcons" }}
-          />{" "}
+          />
           {weather.humidity}
           <span className="text-gray-500">% </span>
         </div>
@@ -150,7 +150,7 @@ export default function WeatherTimeWidget() {
           <i
             className="wi wi-raindrop mr-1"
             style={{ fontFamily: "WeatherIcons" }}
-          />{" "}
+          />
           {weather.rain}
           <span className="text-gray-500">mm </span>
         </div>
@@ -158,14 +158,14 @@ export default function WeatherTimeWidget() {
           <i
             className="wi wi-sunrise mr-1"
             style={{ fontFamily: "WeatherIcons" }}
-          />{" "}
+          />
           {weather.sunrise}
         </div>
         <div>
           <i
             className="wi wi-sunset mr-1"
             style={{ fontFamily: "WeatherIcons" }}
-          />{" "}
+          />
           {weather.sunset}
         </div>
       </div>
@@ -194,4 +194,3 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
-

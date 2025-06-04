@@ -1,8 +1,8 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import dayjs from "dayjs";
 import React from "react";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function TemperatureStats({ metrics }) {
   if (!metrics || metrics.length === 0)

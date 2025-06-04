@@ -1,8 +1,8 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import dayjs from "dayjs";
 import React from "react";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
