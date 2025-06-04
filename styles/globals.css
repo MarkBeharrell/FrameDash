@@ -36,6 +36,10 @@ h6 {
   @apply font-semibold text-gray-200;
 }
 
+body.dark {
+  @apply bg-black font-sans text-white;
+}
+
 p {
   @apply text-gray-300;
 }

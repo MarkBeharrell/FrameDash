@@ -1,11 +1,11 @@
 "use client";
 
 import { fetchMetrics } from "@/lib/fetchMetrics";
-import { useEffect, useRef, useState } from "react";
+import _ from "lodash";
+import { useEffect, useState } from "react";
 
 export function useLiveMetrics(pollInterval = 10000) {
   const [metrics, setMetrics] = useState([]);
-  const seenTimestamps = useRef(new Set());
 
   useEffect(() => {
     let isMounted = true;
@@ -15,16 +15,11 @@ export function useLiveMetrics(pollInterval = 10000) {
         const newData = await fetchMetrics();
         if (!isMounted || !Array.isArray(newData)) return;
 
-        const fresh = newData.filter((entry) => {
-          const time = new Date(entry.time).getTime();
-          if (seenTimestamps.current.has(time)) return false;
-          seenTimestamps.current.add(time);
-          return true;
-        });
-
-        if (fresh.length > 0) {
-          setMetrics((prev) => [...prev, ...fresh]);
-        }
+        setMetrics((prev) =>
+          _.uniqBy([...prev, ...newData], (entry) =>
+            new Date(entry.time).getTime()
+          )
+        );
       } catch (err) {
         console.error("Polling error:", err);
       }
@@ -39,5 +34,6 @@ export function useLiveMetrics(pollInterval = 10000) {
     };
   }, [pollInterval]);
 
-  return metrics;
+  return _.sortBy(metrics, (entry) => new Date(entry.time).getTime());
 }
+

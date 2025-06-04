@@ -1,4 +1,5 @@
 import axios from "axios";
+import _ from "lodash";
 
 export async function fetchMetrics() {
   try {
@@ -26,6 +27,7 @@ export async function fetchMetrics() {
             .split(",")
             .map((l) => l.split("=").map((x) => x.replace(/"/g, "")))
         );
+
         return {
           type,
           labels,
@@ -35,57 +37,47 @@ export async function fetchMetrics() {
       })
       .filter(Boolean);
 
-    const grouped = new Map();
+    // ✅ Group by floored minute timestamp
+    const grouped = _.groupBy(
+      parsed,
+      (metric) => Math.floor(metric.timestamp / 60000) * 60000
+    );
 
-    for (const metric of parsed) {
-      const { timestamp, type, value, labels } = metric;
-      const minuteTimestamp = Math.floor(timestamp / 60000) * 60000;
+    const unified = _.map(grouped, (group, minuteTimestampStr) => {
+      const time = new Date(Number(minuteTimestampStr));
 
-      if (!grouped.has(minuteTimestamp)) {
-        grouped.set(minuteTimestamp, {
-          cpuValues: [],
-          memUsed: null,
-          temps: [],
-          time: new Date(minuteTimestamp)
-        });
-      }
+      const cpuValues = group
+        .filter(
+          (m) =>
+            m.type === "cpu_percent" &&
+            (m.labels.type === "user" || m.labels.type === "system")
+        )
+        .map((m) => parseFloat(m.value.toFixed(1)));
 
-      const group = grouped.get(minuteTimestamp);
+      const memUsedEntry = group.find(
+        (m) => m.type === "memory_percent" && m.labels.memory === "cached"
+      );
 
-      if (type === "cpu_percent") {
-        if (labels.type === "user" || labels.type === "system") {
-          group.cpuValues.push(parseFloat(value.toFixed(1)));
-        }
-      }
+      const temps = group
+        .filter(
+          (m) =>
+            m.type === "sensors_temperature" && m.value > 0 && m.value < 150
+        )
+        .map((m) => parseFloat(m.value.toFixed(1)));
 
-      if (type === "memory_percent" && labels.memory === "cached") {
-        group.memUsed = parseFloat(value.toFixed(1));
-      }
+      const cpuUsage = cpuValues.length > 0 ? _.mean(cpuValues) : null;
 
-      if (type === "sensors_temperature" && value > 0 && value < 150) {
-        group.temps.push(parseFloat(value.toFixed(1)));
-      }
-    }
+      const avgTemp = temps.length > 0 ? _.mean(temps) : null;
 
-    const unified = [];
-    for (const [, entry] of grouped) {
-      const cpuUsage =
-        entry.cpuValues.length > 0
-          ? entry.cpuValues.reduce((a, b) => a + b, 0) / entry.cpuValues.length
-          : null;
-
-      const avgTemp =
-        entry.temps.length > 0
-          ? entry.temps.reduce((a, b) => a + b, 0) / entry.temps.length
-          : null;
-
-      unified.push({
-        time: entry.time,
+      return {
+        time,
         cpuUsage,
-        memoryUsed: entry.memUsed,
+        memoryUsed: memUsedEntry
+          ? parseFloat(memUsedEntry.value.toFixed(1))
+          : null,
         avgTemp
-      });
-    }
+      };
+    });
 
     return unified;
   } catch (error) {
@@ -100,3 +92,4 @@ function fromEntriesShim(iterable) {
     return obj;
   }, {});
 }
+
