@@ -1,6 +1,9 @@
 import axios from "axios";
-import _ from "lodash";
+import groupBy from "lodash/groupBy";
+import map from "lodash/map";
+import mean from "lodash/mean";
 
+const NUM_CORES = parseInt(process.env.NEXT_PUBLIC_NUM_CORES) || 6;
 export async function fetchMetrics() {
   try {
     const res = await axios.get("/api/metrics", {
@@ -37,13 +40,12 @@ export async function fetchMetrics() {
       })
       .filter(Boolean);
 
-    // ✅ Group by floored minute timestamp
-    const grouped = _.groupBy(
+    const grouped = groupBy(
       parsed,
       (metric) => Math.floor(metric.timestamp / 60000) * 60000
     );
 
-    const unified = _.map(grouped, (group, minuteTimestampStr) => {
+    const unified = map(grouped, (group, minuteTimestampStr) => {
       const time = new Date(Number(minuteTimestampStr));
 
       const cpuValues = group
@@ -54,27 +56,50 @@ export async function fetchMetrics() {
         )
         .map((m) => parseFloat(m.value.toFixed(1)));
 
-      const memUsedEntry = group.find(
+      const cpuUsage = cpuValues.length > 0 ? mean(cpuValues) : null;
+
+      const memUsed = group.find(
+        (m) => m.type === "memory_percent" && m.labels.memory === "used"
+      )?.value;
+
+      const memFree = group.find(
+        (m) => m.type === "memory_percent" && m.labels.memory === "free"
+      )?.value;
+
+      const memCached = group.find(
         (m) => m.type === "memory_percent" && m.labels.memory === "cached"
-      );
+      )?.value;
+
+      const load1 =
+        group.find((m) => m.type === "load_shortterm")?.value ?? null;
+      const load1pct = load1 ? (load1 / NUM_CORES) * 100 : null;
+
+      const thermal = group.find(
+        (m) =>
+          m.type === "thermal_temperature" &&
+          m.labels.thermal === "thermal_zone1"
+      )?.value;
 
       const temps = group
         .filter(
           (m) =>
-            m.type === "sensors_temperature" && m.value > 0 && m.value < 150
+            m.type === "sensors_temperature" &&
+            m.value > 0 &&
+            m.value < 150 &&
+            !["iwlwifi_1-virtual-0"].includes(m.labels.sensors)
         )
         .map((m) => parseFloat(m.value.toFixed(1)));
 
-      const cpuUsage = cpuValues.length > 0 ? _.mean(cpuValues) : null;
-
-      const avgTemp = temps.length > 0 ? _.mean(temps) : null;
+      const avgTemp = temps.length > 0 ? mean(temps) : null;
 
       return {
         time,
         cpuUsage,
-        memoryUsed: memUsedEntry
-          ? parseFloat(memUsedEntry.value.toFixed(1))
-          : null,
+        memoryUsed: memUsed ?? null,
+        memoryFree: memFree ?? null,
+        memoryCached: memCached ?? null,
+        load1pct,
+        thermalZone1: thermal ?? null,
         avgTemp
       };
     });
@@ -92,3 +117,4 @@ function fromEntriesShim(iterable) {
     return obj;
   }, {});
 }
+

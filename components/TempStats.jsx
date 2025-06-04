@@ -1,24 +1,30 @@
 "use client";
 
 import dayjs from "dayjs";
+import filter from "lodash/filter";
+import map from "lodash/map";
 import React from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function TemperatureStats({ metrics }) {
   if (!metrics || metrics.length === 0)
-    return "<p>No temperature data available.</p>";
+    return <p>No temperature data available.</p>;
 
-  const chartData = metrics
-    .filter((m) => typeof m.avgTemp === "number")
-    .map((entry) => ({
+  const chartData = map(
+    filter(
+      metrics,
+      (m) => typeof m.avgTemp === "number" || typeof m.thermalZone1 === "number"
+    ),
+    (entry) => ({
       ...entry,
       timeLabel: dayjs(entry.time).format("HH:mm")
-    }));
+    })
+  );
 
   return (
     <>
       <h2 className="mb-2 text-xl font-medium text-gray-600">
-        Average Temperature
+        System Temperature
       </h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
@@ -37,20 +43,25 @@ export default function TemperatureStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
-          {/* <Tooltip
-            formatter={(value) => `${value.toFixed(2)}°C`}
-            labelFormatter={(label) => `Time: ${label}`}
-          /> */}
           <Line
             type="monotone"
             dataKey="avgTemp"
             stroke="#f97316"
             dot={false}
             isAnimationActive={true}
-            name="Avg Temp"
+            name="Avg Sensor Temp"
+          />
+          <Line
+            type="monotone"
+            dataKey="thermalZone1"
+            stroke="#10b981"
+            dot={false}
+            isAnimationActive={true}
+            name="Thermal Zone 1"
           />
         </LineChart>
       </ResponsiveContainer>
     </>
   );
 }
+

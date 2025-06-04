@@ -3,7 +3,19 @@
 import iconMap from "@/utils/iconMap";
 import axios from "axios";
 import dayjs from "dayjs";
-import _ from "lodash";
+import {
+  entries,
+  filter,
+  find,
+  first,
+  get,
+  groupBy,
+  map,
+  meanBy,
+  round,
+  sortBy,
+  take
+} from "lodash";
 import React, {
   createContext,
   useCallback,
@@ -23,8 +35,6 @@ export const WeatherProvider = ({ children }) => {
 
   const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API;
   const CITY = process.env.NEXT_PUBLIC_CITY || "London,GB";
-  // const API_KEY = "46cd22e08e095f49bf8689ebaa7c4b71";
-  // const CITY = "Burnham-on-Crouch,GB";
 
   const fetchWeather = useCallback(async () => {
     try {
@@ -40,41 +50,46 @@ export const WeatherProvider = ({ children }) => {
       const current = currentRes.data;
       const forecast = forecastRes.data;
 
-      const forecastToday = _(forecast.list)
-        .filter((item) => dayjs.unix(item.dt).isSame(now, "day"))
-        .take(4)
-        .map((f) => ({
-          icon: `wi ${iconMap[_.get(f, "weather[0].icon", "01d")] || "wi-na"}`,
-          temp: _.round(_.get(f, "main.temp", 0)),
+      const forecastToday = map(
+        take(
+          filter(forecast.list, (item) =>
+            dayjs.unix(item.dt).isSame(now, "day")
+          ),
+          4
+        ),
+        (f) => ({
+          icon: `wi ${iconMap[get(f, "weather[0].icon", "01d")] || "wi-na"}`,
+          temp: round(get(f, "main.temp", 0)),
           time: dayjs.unix(f.dt).format("HH:mm")
-        }))
-        .value();
+        })
+      );
 
-      const tomorrowChunk = _.find(forecast.list, (item) =>
+      const tomorrowChunk = find(forecast.list, (item) =>
         dayjs.unix(item.dt).isSame(now.add(1, "day"), "day")
       );
 
       const forecastTomorrow = {
-        icon: `wi ${iconMap[_.get(tomorrowChunk, "weather[0].icon", "01d")] || "wi-na"}`,
-        temp: _.round(_.get(tomorrowChunk, "main.temp", 10)),
-        desc: `${_.get(tomorrowChunk, "rain.3h", 0)} mm Rain`,
-        time: dayjs.unix(_.get(tomorrowChunk, "dt", now.unix())).format("HH:mm")
+        icon: `wi ${iconMap[get(tomorrowChunk, "weather[0].icon", "01d")] || "wi-na"}`,
+        temp: round(get(tomorrowChunk, "main.temp", 10)),
+        desc: `${get(tomorrowChunk, "rain.3h", 0)} mm Rain`,
+        time: dayjs.unix(get(tomorrowChunk, "dt", now.unix())).format("HH:mm")
       };
 
-      const dailyGroups = _.groupBy(forecast.list, (entry) =>
+      const dailyGroups = groupBy(forecast.list, (entry) =>
         dayjs.unix(entry.dt).format("YYYY-MM-DD")
       );
 
-      const forecast5Day = _(dailyGroups)
-        .entries()
-        .sortBy(([date]) => date)
-        .take(5)
-        .map(([date, entries]) => ({
+      const forecast5Day = map(
+        take(
+          sortBy(entries(dailyGroups), ([date]) => date),
+          5
+        ),
+        ([date, entriesForDate]) => ({
           day: dayjs(date).format("ddd"),
-          temp: _.round(_.meanBy(entries, "main.temp")),
-          icon: `wi ${iconMap[_.get(_.first(entries), "weather[0].icon", "01d")] || "wi-na"}`
-        }))
-        .value();
+          temp: round(meanBy(entriesForDate, "main.temp")),
+          icon: `wi ${iconMap[get(first(entriesForDate), "weather[0].icon", "01d")] || "wi-na"}`
+        })
+      );
 
       setWeather({
         sunrise: dayjs.unix(current.sys.sunrise).format("HH:mm"),
@@ -82,13 +97,13 @@ export const WeatherProvider = ({ children }) => {
         sunriseRaw: current.sys.sunrise,
         sunsetRaw: current.sys.sunset,
         city: current.name,
-        temp: _.round(current.main.temp),
-        description: _.get(current, "weather[0].description", ""),
-        iconCode: _.get(current, "weather[0].icon", "01d"),
-        wind: _.get(current, "wind.speed", 0),
-        rain: _.get(current, "rain.1h", 0),
-        pressure: _.get(current, "main.pressure", 0),
-        humidity: _.get(current, "main.humidity", 0),
+        temp: round(current.main.temp),
+        description: get(current, "weather[0].description", ""),
+        iconCode: get(current, "weather[0].icon", "01d"),
+        wind: get(current, "wind.speed", 0),
+        rain: get(current, "rain.1h", 0),
+        pressure: get(current, "main.pressure", 0),
+        humidity: get(current, "main.humidity", 0),
         aqi: "Good",
         forecastToday,
         forecastTomorrow,
@@ -117,3 +132,4 @@ export const WeatherProvider = ({ children }) => {
 };
 
 export const useWeather = () => useContext(WeatherContext);
+

@@ -1,18 +1,21 @@
 "use client";
 
 import dayjs from "dayjs";
+import filter from "lodash/filter";
+import map from "lodash/map";
 import React from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
 
-  const chartData = metrics
-    .filter((m) => typeof m.cpuUsage === "number")
-    .map((entry) => ({
+  const chartData = map(
+    filter(metrics, (m) => typeof m.cpuUsage === "number"),
+    (entry) => ({
       ...entry,
       timeLabel: dayjs(entry.time).format("HH:mm")
-    }));
+    })
+  );
 
   return (
     <>
@@ -34,10 +37,6 @@ export default function CpuStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
-          {/* <Tooltip
-            formatter={(value) => `${value.toFixed(2)}%`}
-            labelFormatter={(label) => `Time: ${label}`}
-          /> */}
           <Line
             type="monotone"
             dataKey="cpuUsage"
@@ -51,3 +50,4 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
+

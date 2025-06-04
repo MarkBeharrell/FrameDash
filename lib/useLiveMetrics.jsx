@@ -1,7 +1,8 @@
 "use client";
 
 import { fetchMetrics } from "@/lib/fetchMetrics";
-import _ from "lodash";
+import sortBy from "lodash/sortBy";
+import uniqBy from "lodash/uniqBy";
 import { useEffect, useState } from "react";
 
 export function useLiveMetrics(pollInterval = 10000) {
@@ -16,7 +17,7 @@ export function useLiveMetrics(pollInterval = 10000) {
         if (!isMounted || !Array.isArray(newData)) return;
 
         setMetrics((prev) =>
-          _.uniqBy([...prev, ...newData], (entry) =>
+          uniqBy([...prev, ...newData], (entry) =>
             new Date(entry.time).getTime()
           )
         );
@@ -34,5 +35,5 @@ export function useLiveMetrics(pollInterval = 10000) {
     };
   }, [pollInterval]);
 
-  return _.sortBy(metrics, (entry) => new Date(entry.time).getTime());
+  return sortBy(metrics, (entry) => new Date(entry.time).getTime());
 }

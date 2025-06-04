@@ -1,18 +1,27 @@
 "use client";
 
 import dayjs from "dayjs";
+import filter from "lodash/filter";
+import map from "lodash/map";
 import React from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;
 
-  const chartData = metrics
-    .filter((m) => typeof m.memoryUsed === "number")
-    .map((entry) => ({
+  const chartData = map(
+    filter(
+      metrics,
+      (m) =>
+        typeof m.memoryUsed === "number" ||
+        typeof m.memoryFree === "number" ||
+        typeof m.memoryCached === "number"
+    ),
+    (entry) => ({
       ...entry,
       timeLabel: dayjs(entry.time).format("HH:mm")
-    }));
+    })
+  );
 
   return (
     <>
@@ -30,24 +39,37 @@ export default function MemoryStats({ metrics }) {
             width={40}
             domain={["auto", "auto"]}
             tick={{ fill: "#888", fontSize: 13 }}
-            tickMargin={8}
             tickFormatter={(value) => value.toFixed(1)}
             padding={{ top: 5, bottom: 5 }}
+            tickMargin={8}
           />
-          {/* <Tooltip
-            formatter={(value) => `${value.toFixed(2)}%`}
-            labelFormatter={(label) => `Time: ${label}`}
-          /> */}
           <Line
             type="monotone"
             dataKey="memoryUsed"
             stroke="#3b82f6"
             dot={false}
             isAnimationActive={true}
-            name="Memory Used"
+            name="Used"
+          />
+          <Line
+            type="monotone"
+            dataKey="memoryFree"
+            stroke="#10b981"
+            dot={false}
+            isAnimationActive={true}
+            name="Free"
+          />
+          <Line
+            type="monotone"
+            dataKey="memoryCached"
+            stroke="#f59e0b"
+            dot={false}
+            isAnimationActive={true}
+            name="Cached"
           />
         </LineChart>
       </ResponsiveContainer>
     </>
   );
 }
+
