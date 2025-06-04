@@ -78,7 +78,9 @@ export default function WeatherTimeWidget() {
         aqi: "Good",
         forecastToday,
         forecastTomorrow,
-        forecast5Day
+        forecast5Day,
+        sunriseRaw: current.sys.sunrise,
+        sunsetRaw: current.sys.sunset
       });
     } catch (err) {
       console.error("Weather fetch failed:", err);
@@ -194,3 +196,4 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
+
