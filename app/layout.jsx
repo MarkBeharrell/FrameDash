@@ -2,14 +2,13 @@
 
 import { WeatherProvider, useWeather } from "@/lib/weatherContext";
 import "@/styles/globals.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 function ThemedBody({ children }) {
   const { weather } = useWeather();
   const [autoDark, setAutoDark] = useState(true); // determines if auto mode is active
   const [manualDark, setManualDark] = useState(false); // manual override value
 
-  // Determine effective theme mode
   const isDark = autoDark
     ? (() => {
         if (!weather) return true;
@@ -43,7 +42,7 @@ function ThemedBody({ children }) {
         {!autoDark && (
           <button
             onClick={() => setAutoDark(true)}
-            className="absolute border rounded-md right-[65px] top-[34px] px-1 py-0 text-xs text-gray-400"
+            className="absolute right-[65px] top-[34px] rounded-md border px-1 py-0 text-xs text-gray-400"
           >
             AUTO
           </button>
@@ -64,22 +63,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

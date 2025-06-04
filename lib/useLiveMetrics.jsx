@@ -36,4 +36,3 @@ export function useLiveMetrics(pollInterval = 10000) {
 
   return _.sortBy(metrics, (entry) => new Date(entry.time).getTime());
 }
-

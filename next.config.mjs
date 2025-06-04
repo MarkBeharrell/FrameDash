@@ -1,6 +1,8 @@
 const nextConfig = {
-  // reactStrictMode: false,
-  // productionBrowserSourceMaps: false
+  env: {
+    NEXT_PUBLIC_OPENWEATHER_API: process.env.NEXT_PUBLIC_OPENWEATHER_API,
+    NEXT_PUBLIC_CITY: process.env.NEXT_PUBLIC_CITY
+  }
 };
 
 export default nextConfig;

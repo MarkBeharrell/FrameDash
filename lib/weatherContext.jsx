@@ -5,21 +5,26 @@ import axios from "axios";
 import dayjs from "dayjs";
 import _ from "lodash";
 import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState
 } from "react";
 
-const WeatherContext = createContext();
+const WeatherContext = createContext({
+  weather: null,
+  now: null
+});
 
 export const WeatherProvider = ({ children }) => {
   const [weather, setWeather] = useState(null);
   const [now, setNow] = useState(dayjs());
 
-  const API_KEY = "46cd22e08e095f49bf8689ebaa7c4b71";
-  const CITY = "Burnham-on-Crouch,GB";
+  const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API;
+  const CITY = process.env.NEXT_PUBLIC_CITY || "London,GB";
+  // const API_KEY = "46cd22e08e095f49bf8689ebaa7c4b71";
+  // const CITY = "Burnham-on-Crouch,GB";
 
   const fetchWeather = useCallback(async () => {
     try {
@@ -92,7 +97,7 @@ export const WeatherProvider = ({ children }) => {
     } catch (err) {
       console.error("Weather fetch failed:", err);
     }
-  }, [now]);
+  }, [API_KEY, CITY, now]);
 
   useEffect(() => {
     fetchWeather();
@@ -112,4 +117,3 @@ export const WeatherProvider = ({ children }) => {
 };
 
 export const useWeather = () => useContext(WeatherContext);
-

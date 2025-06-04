@@ -92,4 +92,3 @@ function fromEntriesShim(iterable) {
     return obj;
   }, {});
 }
-

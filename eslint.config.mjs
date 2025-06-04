@@ -1,11 +1,11 @@
 // eslint.config.mjs
 import js from "@eslint/js";
 import next from "@next/eslint-plugin-next";
+import * as importPlugin from "eslint-plugin-import";
+import prettier from "eslint-plugin-prettier";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
-import * as importPlugin from "eslint-plugin-import";
 import tailwindcss from "eslint-plugin-tailwindcss";
-import prettier from "eslint-plugin-prettier";
 
 export default [
   {
@@ -54,7 +54,8 @@ export default [
         console: "readonly",
         window: "readonly",
         setInterval: "readonly",
-        clearInterval: "readonly"
+        clearInterval: "readonly",
+        process: "readonly"
       }
     },
     plugins: {
