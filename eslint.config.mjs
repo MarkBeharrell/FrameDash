@@ -55,7 +55,8 @@ export default [
         window: "readonly",
         setInterval: "readonly",
         clearInterval: "readonly",
-        process: "readonly"
+        process: "readonly",
+        navigator: "readyonly"
       }
     },
     plugins: {
