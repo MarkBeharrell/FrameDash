@@ -13,8 +13,8 @@ export default function WeatherTimeWidget() {
   return (
     <>
       {/* Top Section: Date Icon Temp */}
-      <div className="mb-4 flex items-center justify-between space-x-8">
-        <div className="flex flex-col text-right">
+      <div className="relative mb-4 flex">
+        <div className="absolute left-[-150px] top-[45px] flex flex-col text-right">
           <div className="text-2xl text-gray-500">
             {now.format("dddd")}
             <br />
@@ -36,7 +36,7 @@ export default function WeatherTimeWidget() {
         </div>
 
         {/* Right: Temperature */}
-        <div className="flex flex-row text-left font-normal">
+        <div className="absolute right-[110px] top-[55px] flex flex-row text-left font-normal">
           <span className="text-7xl">{weather.temp}</span>
           <span className="text-3xl text-gray-400">°C</span>
         </div>

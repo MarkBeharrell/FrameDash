@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - /mnt/crates/data/builder:/app
+      - /mnt/crates/data/framedash:/app
     command: sh -c "npm install && npm run build && npm run start"
     tty: true
     ports:
