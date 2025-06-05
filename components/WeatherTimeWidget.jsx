@@ -36,7 +36,7 @@ export default function WeatherTimeWidget() {
         </div>
 
         {/* Right: Temperature */}
-        <div className="absolute right-[110px] top-[55px] flex flex-row text-left font-normal">
+        <div className="absolute right-[-110px] top-[55px] flex flex-row text-left font-normal">
           <span className="text-7xl">{weather.temp}</span>
           <span className="text-3xl text-gray-400">°C</span>
         </div>
@@ -108,4 +108,3 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
-
