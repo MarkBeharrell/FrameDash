@@ -7,15 +7,15 @@ import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 
 /* eslint-disable no-unused-vars */
-const metadata = {
-  title: "FrameDash",
-  description: "Minimal fullscreen app",
-  appleWebApp: {
-    capable: true,
-    title: "FrameDash",
-    statusBarStyle: "black-translucent"
-  }
-};
+// const metadata = {
+//   title: "FrameDash",
+//   description: "Minimal fullscreen app",
+//   appleWebApp: {
+//     capable: true,
+//     title: "FrameDash",
+//     statusBarStyle: "black-translucent"
+//   }
+// };
 
 function ThemedBody({ children }) {
   const { weather } = useWeather();
@@ -35,7 +35,7 @@ function ThemedBody({ children }) {
       className={`flex min-h-screen flex-col ${isDark ? "dark" : ""} dark:bg-black dark:text-white`}
     >
       <ToastContainer />
-      <InstallPrompt />
+      {/* <InstallPrompt /> */}
       <main className="relative grid min-h-screen auto-rows-fr grid-cols-1 gap-6 p-6 md:grid-cols-6">
         {/* Toggle Button */}
         <button
@@ -78,11 +78,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-
-
-
-
-
-
 

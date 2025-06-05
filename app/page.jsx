@@ -17,15 +17,15 @@ export default function DashboardPage() {
         <WeatherTimeWidget />
       </section>
 
-      <section className="col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
         <CpuStats metrics={metrics} />
       </section>
 
-      <section className="col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
         <MemoryStats metrics={metrics} />
       </section>
 
-      <section className="col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
         <TempStats metrics={metrics} />
       </section>
     </>

@@ -1,7 +1,9 @@
 "use client";
 
+import getTrendColor from "@/lib/getTrendColour";
 import dayjs from "dayjs";
 import filter from "lodash/filter";
+import last from "lodash/last";
 import map from "lodash/map";
 import React from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
@@ -21,11 +23,28 @@ export default function TemperatureStats({ metrics }) {
     })
   );
 
+  const lastValue = last(chartData);
+  const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
+  const tempChangePct =
+    lastValue && prev
+      ? ((lastValue.thermalZone1 - prev.thermalZone1) / prev.thermalZone1) * 100
+      : null;
+  const statColor = getTrendColor(lastValue?.thermalZone1, prev?.thermalZone1);
+
   return (
     <>
-      <h2 className="mb-2 text-xl font-medium text-gray-600">
+      <h2 className="mb-2 text-base font-medium text-gray-600">
         System Temperature
       </h2>
+      <div className={`absolute mb-1 text-2xl top-[10px] right-[10px] font-bold !text-${statColor}-500`}>
+        {lastValue?.thermalZone1?.toFixed(1) ?? "--"}<span className="align-super text-sm font-normal text-gray-400">°C</span>
+        {tempChangePct !== null && (
+          <span className="ml-1 text-sm font-medium">
+            {tempChangePct > 0 ? "+" : ""}
+            {tempChangePct.toFixed(1)}%
+          </span>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
@@ -64,3 +83,52 @@ export default function TemperatureStats({ metrics }) {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

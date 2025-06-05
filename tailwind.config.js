@@ -7,6 +7,16 @@ module.exports = {
     "./components/**/*.{js,jsx}",
     "./styles/**/*.css"
   ],
+  safelist: [
+    "text-gray-400",
+    "text-gray-500",
+    "text-red-500",
+    "text-green-500",
+    "text-blue-500",
+    "!text-red-500",
+    "!text-green-500",
+    "!text-blue-500"
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -26,7 +36,7 @@ module.exports = {
           900: "#171717"
         },
         accent: {
-          DEFAULT: "#007aff" // You can later bind this to weather conditions
+          DEFAULT: "#007aff"
         }
       },
       spacing: {

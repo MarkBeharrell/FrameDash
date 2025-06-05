@@ -1,7 +1,9 @@
 "use client";
 
+import getTrendColor from "@/lib/getTrendColour";
 import dayjs from "dayjs";
 import filter from "lodash/filter";
+import last from "lodash/last";
 import map from "lodash/map";
 import React from "react";
 import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
@@ -17,9 +19,28 @@ export default function CpuStats({ metrics }) {
     })
   );
 
+  const lastValue = last(chartData);
+  const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
+  const cpuChangePct =
+    lastValue && prev
+      ? ((lastValue.cpuUsage - prev.cpuUsage) / prev.cpuUsage) * 100
+      : null;
+  const statColor = getTrendColor(lastValue?.cpuUsage, prev?.cpuUsage);
+
   return (
     <>
-      <h2 className="mb-2 text-xl font-medium text-gray-600">CPU Usage</h2>
+      <h2 className="mb-2 text-base font-medium text-gray-600">
+      CPU Usage</h2>
+      <div className={`absolute mb-1 text-2xl top-[10px] right-[10px] font-bold !text-${statColor}-500`}>
+        {lastValue?.cpuUsage?.toFixed(1) ?? "--"}<span className="text-sm font-normal text-gray-400">%</span>
+        {cpuChangePct !== null && (
+          <span className="ml-2 text-sm font-medium">
+            {cpuChangePct > 0 ? "+" : ""}
+            {cpuChangePct.toFixed(1)}%
+          </span>
+        )}
+      </div>
+
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
@@ -50,3 +71,24 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
