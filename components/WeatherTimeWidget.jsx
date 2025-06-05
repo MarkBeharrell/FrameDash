@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
-
 import { useWeather } from "@/lib/weatherContext";
+import iconMap from "@/utils/iconMap";
+import React from "react";
 
 export default function WeatherTimeWidget() {
   const { weather, now } = useWeather();
@@ -26,7 +26,9 @@ export default function WeatherTimeWidget() {
         {/* Center: Icon + Description */}
         <div className="flex h-full flex-col items-center justify-center">
           <div className="flex h-[180px] w-[180px] items-center justify-center">
-            <i className="wi wi-day-sunny text-9xl"></i>
+            <i
+              className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-9xl`}
+            ></i>
           </div>
           <div className="w-full text-center text-lg capitalize text-gray-500">
             {weather.description}
@@ -106,3 +108,4 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
+

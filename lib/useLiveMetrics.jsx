@@ -5,7 +5,9 @@ import sortBy from "lodash/sortBy";
 import uniqBy from "lodash/uniqBy";
 import { useEffect, useState } from "react";
 
-export function useLiveMetrics(pollInterval = 10000) {
+const REFRESH = parseInt(process.env.NEXT_PUBLIC_REFRESH) || 10000;
+
+export function useLiveMetrics(pollInterval = REFRESH) {
   const [metrics, setMetrics] = useState([]);
 
   useEffect(() => {

@@ -1,9 +1,0 @@
-services:
-  dashboard:
-    build: .
-    container_name: framedash
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    restart: always
