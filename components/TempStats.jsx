@@ -6,7 +6,14 @@ import filter from "lodash/filter";
 import last from "lodash/last";
 import map from "lodash/map";
 import React from "react";
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  XAxis,
+  YAxis
+} from "recharts";
 
 export default function TemperatureStats({ metrics }) {
   if (!metrics || metrics.length === 0)
@@ -36,8 +43,13 @@ export default function TemperatureStats({ metrics }) {
       <h2 className="mb-2 text-base font-medium text-gray-600">
         System Temperature
       </h2>
-      <div className={`absolute mb-1 text-2xl top-[10px] right-[10px] font-bold !text-${statColor}-500`}>
-        {lastValue?.thermalZone1?.toFixed(1) ?? "--"}<span className="align-super text-sm font-normal text-gray-400">°C</span>
+      <div
+        className={`!text- absolute right-[10px] top-[10px] mb-1 text-2xl font-bold${statColor}-500`}
+      >
+        {lastValue?.thermalZone1?.toFixed(1) ?? "--"}
+        <span className="align-super text-sm font-normal text-gray-400">
+          °C
+        </span>
         {tempChangePct !== null && (
           <span className="ml-1 text-sm font-medium">
             {tempChangePct > 0 ? "+" : ""}
@@ -62,6 +74,23 @@ export default function TemperatureStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
+          {chartData.map(
+            (entry, idx) =>
+              entry.isGap && (
+                <ReferenceLine
+                  key={`gap-${idx}`}
+                  x={entry.timeLabel}
+                  stroke="gray"
+                  strokeDasharray="3 3"
+                  label={{
+                    value: "Gap",
+                    position: "top",
+                    fontSize: 10,
+                    fill: "#888"
+                  }}
+                />
+              )
+          )}
           <Line
             type="monotone"
             dataKey="avgTemp"
@@ -83,52 +112,3 @@ export default function TemperatureStats({ metrics }) {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

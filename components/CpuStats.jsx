@@ -6,7 +6,14 @@ import filter from "lodash/filter";
 import last from "lodash/last";
 import map from "lodash/map";
 import React from "react";
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  XAxis,
+  YAxis
+} from "recharts";
 
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
@@ -29,10 +36,12 @@ export default function CpuStats({ metrics }) {
 
   return (
     <>
-      <h2 className="mb-2 text-base font-medium text-gray-600">
-      CPU Usage</h2>
-      <div className={`absolute mb-1 text-2xl top-[10px] right-[10px] font-bold !text-${statColor}-500`}>
-        {lastValue?.cpuUsage?.toFixed(1) ?? "--"}<span className="text-sm font-normal text-gray-400">%</span>
+      <h2 className="mb-2 text-base font-medium text-gray-600">CPU Usage</h2>
+      <div
+        className={`absolute right-[10px] top-[10px] mb-1 text-2xl font-bold !text-${statColor}-500`}
+      >
+        {lastValue?.cpuUsage?.toFixed(1) ?? "--"}
+        <span className="text-sm font-normal text-gray-400">%</span>
         {cpuChangePct !== null && (
           <span className="ml-2 text-sm font-medium">
             {cpuChangePct > 0 ? "+" : ""}
@@ -58,6 +67,23 @@ export default function CpuStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
+          {chartData.map(
+            (entry, idx) =>
+              entry.isGap && (
+                <ReferenceLine
+                  key={`gap-${idx}`}
+                  x={entry.timeLabel}
+                  stroke="gray"
+                  strokeDasharray="3 3"
+                  label={{
+                    value: "Gap",
+                    position: "top",
+                    fontSize: 10,
+                    fill: "#888"
+                  }}
+                />
+              )
+          )}
           <Line
             type="monotone"
             dataKey="cpuUsage"
@@ -71,24 +97,3 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

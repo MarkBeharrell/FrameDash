@@ -20,7 +20,9 @@
     "react-dom": "19.1.0",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",

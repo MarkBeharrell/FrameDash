@@ -1,6 +1,8 @@
 "use client";
 
 import { fetchMetrics } from "@/lib/fetchMetrics";
+import { mergeWithGapMarkers } from "@/lib/mergeWithGapMarkers";
+import { saveMetrics } from "@/lib/saveMetrics";
 import sortBy from "lodash/sortBy";
 import uniqBy from "lodash/uniqBy";
 import { useEffect, useState } from "react";
@@ -17,6 +19,10 @@ export function useLiveMetrics(pollInterval = REFRESH) {
       try {
         const newData = await fetchMetrics();
         if (!isMounted || !Array.isArray(newData)) return;
+
+        for (const metric of newData) {
+          await saveMetrics(metric); // Save each metric to DB
+        }
 
         setMetrics((prev) =>
           uniqBy([...prev, ...newData], (entry) =>
@@ -37,5 +43,8 @@ export function useLiveMetrics(pollInterval = REFRESH) {
     };
   }, [pollInterval]);
 
-  return sortBy(metrics, (entry) => new Date(entry.time).getTime());
+  return mergeWithGapMarkers(
+    [],
+    sortBy(metrics, (entry) => new Date(entry.time).getTime())
+  );
 }

@@ -2,17 +2,19 @@ import axios from "axios";
 import groupBy from "lodash/groupBy";
 import map from "lodash/map";
 import mean from "lodash/mean";
+import { getDB } from "./db";
 
 const NUM_CORES = parseInt(process.env.NEXT_PUBLIC_NUM_CORES) || 6;
+
 export async function fetchMetrics() {
   try {
     const res = await axios.get("/api/metrics", {
       headers: { "Cache-Control": "no-store" }
     });
 
-    const text = res.data;
+    const db = await getDB();
 
-    const lines = text
+    const lines = res.data
       .split("\n")
       .filter((line) => line.startsWith("collectd_") && !line.startsWith("#"));
 
@@ -24,7 +26,6 @@ export async function fetchMetrics() {
         if (!match) return null;
 
         const [, type, labelsStr] = match;
-
         const labels = fromEntriesShim(
           labelsStr
             .split(",")
@@ -42,7 +43,7 @@ export async function fetchMetrics() {
 
     const grouped = groupBy(
       parsed,
-      (metric) => Math.floor(metric.timestamp / 60000) * 60000
+      (m) => Math.floor(m.timestamp / 60000) * 60000
     );
 
     const unified = map(grouped, (group, minuteTimestampStr) => {
@@ -52,20 +53,18 @@ export async function fetchMetrics() {
         .filter(
           (m) =>
             m.type === "cpu_percent" &&
-            (m.labels.type === "user" || m.labels.type === "system")
+            ["user", "system"].includes(m.labels.type)
         )
         .map((m) => parseFloat(m.value.toFixed(1)));
 
-      const cpuUsage = cpuValues.length > 0 ? mean(cpuValues) : null;
+      const cpuUsage = cpuValues.length ? mean(cpuValues) : null;
 
       const memUsed = group.find(
         (m) => m.type === "memory_percent" && m.labels.memory === "used"
       )?.value;
-
       const memFree = group.find(
         (m) => m.type === "memory_percent" && m.labels.memory === "free"
       )?.value;
-
       const memCached = group.find(
         (m) => m.type === "memory_percent" && m.labels.memory === "cached"
       )?.value;
@@ -92,21 +91,37 @@ export async function fetchMetrics() {
 
       const avgTemp = temps.length > 0 ? mean(temps) : null;
 
+      // ✅ Save each row to DB
+      db.run(
+        `
+        INSERT INTO metrics (
+          time, cpuUsage, memoryUsed, memoryFree, memoryCached, avgTemp, thermalZone1
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        `,
+        time.toISOString(),
+        cpuUsage,
+        memUsed ?? null,
+        memFree ?? null,
+        memCached ?? null,
+        avgTemp,
+        thermal ?? null
+      );
+
       return {
         time,
         cpuUsage,
         memoryUsed: memUsed ?? null,
         memoryFree: memFree ?? null,
         memoryCached: memCached ?? null,
-        load1pct,
+        avgTemp,
         thermalZone1: thermal ?? null,
-        avgTemp
+        load1pct
       };
     });
 
     return unified;
-  } catch (error) {
-    console.error("fetchMetrics failed:", error.message);
+  } catch (err) {
+    console.error("fetchMetrics failed:", err.message);
     return [];
   }
 }
