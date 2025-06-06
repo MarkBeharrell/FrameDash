@@ -1,8 +1,8 @@
+// lib/useLiveMetrics.jsx
 "use client";
 
 import { fetchMetrics } from "@/lib/fetchMetrics";
 import { mergeWithGapMarkers } from "@/lib/mergeWithGapMarkers";
-import { saveMetrics } from "@/lib/saveMetrics";
 import sortBy from "lodash/sortBy";
 import uniqBy from "lodash/uniqBy";
 import { useEffect, useState } from "react";
@@ -10,7 +10,23 @@ import { useEffect, useState } from "react";
 const REFRESH = parseInt(process.env.NEXT_PUBLIC_REFRESH) || 10000;
 
 export function useLiveMetrics(pollInterval = REFRESH) {
-  const [metrics, setMetrics] = useState([]);
+  const [history, setHistory] = useState([]);
+  const [live, setLive] = useState([]);
+
+  useEffect(() => {
+    // Fetch once on mount
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch("/api/history", { cache: "no-store" });
+        const data = await res.json();
+        setHistory(data);
+      } catch (err) {
+        console.error("Failed to load historical metrics:", err);
+      }
+    };
+
+    fetchHistory();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -20,11 +36,7 @@ export function useLiveMetrics(pollInterval = REFRESH) {
         const newData = await fetchMetrics();
         if (!isMounted || !Array.isArray(newData)) return;
 
-        for (const metric of newData) {
-          await saveMetrics(metric); // Save each metric to DB
-        }
-
-        setMetrics((prev) =>
+        setLive((prev) =>
           uniqBy([...prev, ...newData], (entry) =>
             new Date(entry.time).getTime()
           )
@@ -43,8 +55,11 @@ export function useLiveMetrics(pollInterval = REFRESH) {
     };
   }, [pollInterval]);
 
-  return mergeWithGapMarkers(
-    [],
-    sortBy(metrics, (entry) => new Date(entry.time).getTime())
+  const merged = mergeWithGapMarkers(
+    sortBy(history, (entry) => new Date(entry.time).getTime()),
+    sortBy(live, (entry) => new Date(entry.time).getTime())
   );
+
+  return merged;
 }
+

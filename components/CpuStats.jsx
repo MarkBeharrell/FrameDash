@@ -9,6 +9,7 @@ import React from "react";
 import {
   Line,
   LineChart,
+  ReferenceArea,
   ReferenceLine,
   ResponsiveContainer,
   XAxis,
@@ -18,14 +19,23 @@ import {
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
 
-  const chartData = map(
-    filter(metrics, (m) => typeof m.cpuUsage === "number"),
-    (entry) => ({
-      ...entry,
-      timeLabel: dayjs(entry.time).format("HH:mm")
-    })
-  );
+  // ✅ Convert and filter for chart
+  const validPoints = filter(metrics, (m) => typeof m.cpuUsage === "number");
 
+  const chartData = map(validPoints, (entry) => ({
+    ...entry,
+    timestamp: new Date(entry.time).getTime()
+  }));
+
+  // ✅ Gaps using raw time, mapped to timestamps too
+  const gapMarkers = metrics
+    .filter((m) => m.isGap)
+    .map((m) => ({
+      time: m.time,
+      timestamp: new Date(m.time).getTime()
+    }));
+
+  // ✅ Determine last CPU value + color
   const lastValue = last(chartData);
   const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
   const cpuChangePct =
@@ -38,7 +48,7 @@ export default function CpuStats({ metrics }) {
     <>
       <h2 className="mb-2 text-base font-medium text-gray-600">CPU Usage</h2>
       <div
-        className={`absolute right-[10px] top-[10px] mb-1 text-2xl font-bold !text-${statColor}-500`}
+        className={`!text-${statColor}-500 absolute right-[10px] top-[10px] mb-1 text-2xl font-bold`}
       >
         {lastValue?.cpuUsage?.toFixed(1) ?? "--"}
         <span className="text-sm font-normal text-gray-400">%</span>
@@ -50,15 +60,19 @@ export default function CpuStats({ metrics }) {
         )}
       </div>
 
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
+          {/* ✅ Numeric X axis */}
           <XAxis
-            dataKey="timeLabel"
+            dataKey="timestamp"
+            type="number"
+            domain={["auto", "auto"]}
+            tickFormatter={(val) => dayjs(val).format("HH:mm")}
             stroke="#888"
             tick={{ fill: "#888", fontSize: 13 }}
             tickMargin={12}
-            padding={{ left: 5, right: 0 }}
           />
+
           <YAxis
             width={40}
             domain={["auto", "auto"]}
@@ -67,23 +81,52 @@ export default function CpuStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
-          {chartData.map(
-            (entry, idx) =>
-              entry.isGap && (
-                <ReferenceLine
-                  key={`gap-${idx}`}
-                  x={entry.timeLabel}
-                  stroke="gray"
-                  strokeDasharray="3 3"
-                  label={{
-                    value: "Gap",
-                    position: "top",
-                    fontSize: 10,
-                    fill: "#888"
-                  }}
-                />
-              )
-          )}
+
+          {gapMarkers.map((gap, idx) => {
+            const currentIndex = chartData.findIndex(
+              (e) => e.timestamp === gap.timestamp
+            );
+
+            const x1 = chartData[currentIndex - 1]?.timestamp;
+            const x2 = chartData[currentIndex + 1]?.timestamp;
+
+            if (!x1 || !x2) return null;
+
+            return [
+              <ReferenceArea
+                key={`gap-area-${idx}`}
+                x1={x1}
+                x2={x2}
+                strokeOpacity={0}
+                fill="rgba(150, 150, 150, 0.25)"
+              />,
+              <ReferenceLine
+                key={`gap-line-start-${idx}`}
+                x={x1}
+                stroke="gray"
+                strokeDasharray="3 3"
+                label={{
+                  value: "Gap Start",
+                  position: "top",
+                  fontSize: 10,
+                  fill: "#888"
+                }}
+              />,
+              <ReferenceLine
+                key={`gap-line-end-${idx}`}
+                x={x2}
+                stroke="gray"
+                strokeDasharray="3 3"
+                label={{
+                  value: "Gap End",
+                  position: "top",
+                  fontSize: 10,
+                  fill: "#888"
+                }}
+              />
+            ];
+          })}
+
           <Line
             type="monotone"
             dataKey="cpuUsage"
@@ -97,3 +140,4 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
+

@@ -9,6 +9,7 @@ import React from "react";
 import {
   Line,
   LineChart,
+  ReferenceArea,
   ReferenceLine,
   ResponsiveContainer,
   XAxis,
@@ -18,19 +19,25 @@ import {
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;
 
-  const chartData = map(
-    filter(
-      metrics,
-      (m) =>
-        typeof m.memoryUsed === "number" ||
-        typeof m.memoryFree === "number" ||
-        typeof m.memoryCached === "number"
-    ),
-    (entry) => ({
-      ...entry,
-      timeLabel: dayjs(entry.time).format("HH:mm")
-    })
+  const validPoints = filter(
+    metrics,
+    (m) =>
+      typeof m.memoryUsed === "number" ||
+      typeof m.memoryFree === "number" ||
+      typeof m.memoryCached === "number"
   );
+
+  const chartData = map(validPoints, (entry) => ({
+    ...entry,
+    timestamp: new Date(entry.time).getTime()
+  }));
+
+  const gapMarkers = metrics
+    .filter((m) => m.isGap)
+    .map((m) => ({
+      time: m.time,
+      timestamp: new Date(m.time).getTime()
+    }));
 
   const lastValue = last(chartData);
   const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
@@ -44,7 +51,7 @@ export default function MemoryStats({ metrics }) {
     <>
       <h2 className="mb-2 text-base font-medium text-gray-600">Memory Usage</h2>
       <div
-        className={`!text- absolute right-[10px] top-[10px] mb-1 text-2xl font-bold${statColor}-500`}
+        className={`!text-${statColor}-500 absolute right-[10px] top-[10px] mb-1 text-2xl font-bold`}
       >
         {lastValue?.memoryUsed?.toFixed(1) ?? "--"}
         <span className="text-sm font-normal text-gray-400">%</span>
@@ -55,15 +62,19 @@ export default function MemoryStats({ metrics }) {
           </span>
         )}
       </div>
-      <ResponsiveContainer width="100%" height="100%">
+
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
           <XAxis
-            dataKey="timeLabel"
+            dataKey="timestamp"
+            type="number"
+            domain={["auto", "auto"]}
+            tickFormatter={(val) => dayjs(val).format("HH:mm")}
             stroke="#888"
             tick={{ fill: "#888", fontSize: 13 }}
             tickMargin={12}
-            padding={{ left: 5, right: 0 }}
           />
+
           <YAxis
             width={40}
             domain={["auto", "auto"]}
@@ -72,49 +83,71 @@ export default function MemoryStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
-          {chartData.map(
-            (entry, idx) =>
-              entry.isGap && (
-                <ReferenceLine
-                  key={`gap-${idx}`}
-                  x={entry.timeLabel}
-                  stroke="gray"
-                  strokeDasharray="3 3"
-                  label={{
-                    value: "Gap",
-                    position: "top",
-                    fontSize: 10,
-                    fill: "#888"
-                  }}
-                />
-              )
-          )}
+
+          {/* Gaps: shade and mark */}
+          {gapMarkers.map((gap, idx) => {
+            const currentIndex = chartData.findIndex(
+              (e) => e.timestamp === gap.timestamp
+            );
+            const x1 = chartData[currentIndex - 1]?.timestamp;
+            const x2 = chartData[currentIndex + 1]?.timestamp;
+            if (!x1 || !x2) return null;
+
+            return [
+              <ReferenceArea
+                key={`mem-gap-area-${idx}`}
+                x1={x1}
+                x2={x2}
+                fill="rgba(150, 150, 150, 0.25)"
+              />,
+              <ReferenceLine
+                key={`mem-gap-start-${idx}`}
+                x={x1}
+                stroke="gray"
+                strokeDasharray="3 3"
+                label={{
+                  value: "Gap Start",
+                  position: "top",
+                  fontSize: 10,
+                  fill: "#888"
+                }}
+              />,
+              <ReferenceLine
+                key={`mem-gap-end-${idx}`}
+                x={x2}
+                stroke="gray"
+                strokeDasharray="3 3"
+                label={{
+                  value: "Gap End",
+                  position: "top",
+                  fontSize: 10,
+                  fill: "#888"
+                }}
+              />
+            ];
+          })}
+
           <Line
             type="monotone"
             dataKey="memoryUsed"
             stroke="#3b82f6"
             dot={false}
-            isAnimationActive={true}
-            name="Used"
           />
           <Line
             type="monotone"
             dataKey="memoryFree"
             stroke="#10b981"
             dot={false}
-            isAnimationActive={true}
-            name="Free"
           />
           <Line
             type="monotone"
             dataKey="memoryCached"
             stroke="#f59e0b"
             dot={false}
-            isAnimationActive={true}
-            name="Cached"
           />
         </LineChart>
       </ResponsiveContainer>
     </>
   );
 }
+
