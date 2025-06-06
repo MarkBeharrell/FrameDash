@@ -19,7 +19,7 @@ import {
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
 
-  // ✅ Convert and filter for chart
+  //  Convert and filter for chart
   const validPoints = filter(metrics, (m) => typeof m.cpuUsage === "number");
 
   const chartData = map(validPoints, (entry) => ({
@@ -27,7 +27,7 @@ export default function CpuStats({ metrics }) {
     timestamp: new Date(entry.time).getTime()
   }));
 
-  // ✅ Gaps using raw time, mapped to timestamps too
+  //  Gaps using raw time, mapped to timestamps too
   const gapMarkers = metrics
     .filter((m) => m.isGap)
     .map((m) => ({
@@ -35,7 +35,7 @@ export default function CpuStats({ metrics }) {
       timestamp: new Date(m.time).getTime()
     }));
 
-  // ✅ Determine last CPU value + color
+  //  Determine last CPU value + color
   const lastValue = last(chartData);
   const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
   const cpuChangePct =
@@ -62,7 +62,7 @@ export default function CpuStats({ metrics }) {
 
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
-          {/* ✅ Numeric X axis */}
+          {/*  Numeric X axis */}
           <XAxis
             dataKey="timestamp"
             type="number"
