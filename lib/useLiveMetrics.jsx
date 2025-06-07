@@ -62,4 +62,3 @@ export function useLiveMetrics(pollInterval = REFRESH) {
 
   return merged;
 }
-

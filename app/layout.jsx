@@ -1,12 +1,11 @@
 "use client";
 
-import InstallPrompt from "@/lib/prompt";
+// import InstallPrompt from "@/lib/prompt";
 import { WeatherProvider, useWeather } from "@/lib/weatherContext";
 import "@/styles/globals.css";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 
-/* eslint-disable no-unused-vars */
 // const metadata = {
 //   title: "FrameDash",
 //   description: "Minimal fullscreen app",

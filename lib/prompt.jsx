@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Bounce, toast } from "react-toastify";
 
 export default function InstallPrompt() {
