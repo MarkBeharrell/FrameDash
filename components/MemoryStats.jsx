@@ -19,12 +19,10 @@ import {
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;
 
-  const validPoints = filter(
-    metrics,
-    (m) =>
-      typeof m.memoryUsed === "number" ||
-      typeof m.memoryFree === "number" ||
-      typeof m.memoryCached === "number"
+  const validPoints = filter(metrics, (m) =>
+    ["memoryUsed", "memoryFree", "memoryCached"].some(
+      (key) => typeof m[key] === "number"
+    )
   );
 
   const chartData = map(validPoints, (entry) => ({
@@ -35,7 +33,6 @@ export default function MemoryStats({ metrics }) {
   const gapMarkers = metrics
     .filter((m) => m.isGap)
     .map((m) => ({
-      time: m.time,
       timestamp: new Date(m.time).getTime()
     }));
 
@@ -69,12 +66,15 @@ export default function MemoryStats({ metrics }) {
             dataKey="timestamp"
             type="number"
             domain={["auto", "auto"]}
-            tickFormatter={(val) => dayjs(val).format("HH:mm")}
             stroke="#888"
             tick={{ fill: "#888", fontSize: 13 }}
             tickMargin={12}
+            tickFormatter={(val, index) => {
+              const point = chartData[index];
+              if (point?.isDayDivider && point?.label) return point.label;
+              return dayjs(val).format("HH:mm");
+            }}
           />
-
           <YAxis
             width={40}
             domain={["auto", "auto"]}
@@ -83,8 +83,36 @@ export default function MemoryStats({ metrics }) {
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
           />
+          {chartData.map((entry, idx) =>
+            entry.isDayDivider ? (
+              <ReferenceLine
+                key={`day-${idx}`}
+                x={entry.timestamp}
+                stroke="#666"
+                strokeDasharray="4 1"
+                label={{
+                  value: entry.label,
+                  position: "top",
+                  fontSize: 12,
+                  fill: "#bbb"
+                }}
+              />
+            ) : entry.isLiveStart ? (
+              <ReferenceLine
+                key={`live-${idx}`}
+                x={entry.timestamp}
+                stroke="#00f"
+                strokeDasharray="2 2"
+                label={{
+                  value: "Live",
+                  position: "top",
+                  fontSize: 10,
+                  fill: "#00f"
+                }}
+              />
+            ) : null
+          )}
 
-          {/* Gaps: shade and mark */}
           {gapMarkers.map((gap, idx) => {
             const currentIndex = chartData.findIndex(
               (e) => e.timestamp === gap.timestamp
@@ -92,16 +120,16 @@ export default function MemoryStats({ metrics }) {
             const x1 = chartData[currentIndex - 1]?.timestamp;
             const x2 = chartData[currentIndex + 1]?.timestamp;
             if (!x1 || !x2) return null;
-
             return [
               <ReferenceArea
-                key={`mem-gap-area-${idx}`}
+                key={`gap-area-${idx}`}
                 x1={x1}
                 x2={x2}
+                strokeOpacity={0}
                 fill="rgba(150, 150, 150, 0.25)"
               />,
               <ReferenceLine
-                key={`mem-gap-start-${idx}`}
+                key={`gap-start-${idx}`}
                 x={x1}
                 stroke="gray"
                 strokeDasharray="3 3"
@@ -113,7 +141,7 @@ export default function MemoryStats({ metrics }) {
                 }}
               />,
               <ReferenceLine
-                key={`mem-gap-end-${idx}`}
+                key={`gap-end-${idx}`}
                 x={x2}
                 stroke="gray"
                 strokeDasharray="3 3"
@@ -150,3 +178,4 @@ export default function MemoryStats({ metrics }) {
     </>
   );
 }
+
