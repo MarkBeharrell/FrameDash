@@ -20,9 +20,15 @@ export default function TemperatureStats({ metrics }) {
   if (!metrics || metrics.length === 0)
     return <p>No temperature data available.</p>;
 
+  // const today = dayjs().format("YYYY-MM-DD");
+
   const validPoints = filter(
     metrics,
-    (m) => typeof m.avgTemp === "number" || typeof m.thermalZone1 === "number"
+    (m) =>
+      // dayjs(m.time).format("YYYY-MM-DD") === today &&
+      // (
+      typeof m.avgTemp === "number" || typeof m.thermalZone1 === "number"
+    // )
   );
 
   const chartData = map(validPoints, (entry) => ({
@@ -65,7 +71,7 @@ export default function TemperatureStats({ metrics }) {
         )}
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
             dataKey="timestamp"

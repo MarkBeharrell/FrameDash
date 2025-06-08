@@ -21,7 +21,14 @@ export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
 
   //  Convert and filter for chart
-  const validPoints = filter(metrics, (m) => typeof m.cpuUsage === "number");
+  // const today = dayjs().format("YYYY-MM-DD");
+
+  const validPoints = filter(
+    metrics,
+    (m) => typeof m.cpuUsage === "number"
+    // &&
+    //   dayjs(m.time).format("YYYY-MM-DD") === today
+  );
 
   const chartData = map(validPoints, (entry) => ({
     ...entry,
@@ -61,7 +68,7 @@ export default function CpuStats({ metrics }) {
         )}
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           {/*  Numeric X axis */}
           <XAxis

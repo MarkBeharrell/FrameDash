@@ -40,7 +40,9 @@ export async function GET() {
 
     console.log(snapshots);
 
-    const rows = await db.all("SELECT * FROM metrics ORDER BY time ASC");
+    const rows = await db.all(
+      `SELECT * FROM metrics WHERE DATE(time) = DATE('now', 'localtime') ORDER BY time ASC`
+    );
 
     const data = rows.map((row) => ({
       time: new Date(row.time),

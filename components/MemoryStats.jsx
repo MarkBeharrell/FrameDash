@@ -19,12 +19,17 @@ import {
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;
 
+  // const today = dayjs().format("YYYY-MM-DD");
+
   const validPoints = filter(
     metrics,
     (m) =>
+      // dayjs(m.time).format("YYYY-MM-DD") === today &&
+      // (
       typeof m.memoryUsed === "number" ||
       typeof m.memoryFree === "number" ||
       typeof m.memoryCached === "number"
+    // )
   );
 
   const chartData = map(validPoints, (entry) => ({
@@ -63,7 +68,7 @@ export default function MemoryStats({ metrics }) {
         )}
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData}>
           <XAxis
             dataKey="timestamp"
@@ -328,4 +333,3 @@ export default function MemoryStats({ metrics }) {
 //     </>
 //   );
 // }
-
