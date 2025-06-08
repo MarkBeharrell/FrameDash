@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import filter from "lodash/filter";
 import last from "lodash/last";
 import map from "lodash/map";
+import sortBy from "lodash/sortBy";
 import React from "react";
 import {
   Line,
@@ -19,15 +20,18 @@ import {
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
 
-  const validPoints = filter(metrics, (m) => typeof m.cpuUsage === "number");
+  const chartData = sortBy(
+    metrics.map((entry) => ({
+      ...entry,
+      timestamp: new Date(entry.time).getTime()
+    })),
+    (e) => [e.timestamp, e.cpuUsage == null ? 0 : 1] // ensure data rows come after markers
+  );
 
-  const chartData = map(validPoints, (entry) => ({
-    ...entry,
-    timestamp: new Date(entry.time).getTime()
-  }));
+  const today = dayjs().format("YYYY-MM-DD");
 
   const gapMarkers = metrics
-    .filter((m) => m.isGap)
+    .filter((m) => m.isGap && dayjs(m.time).format("YYYY-MM-DD") === today)
     .map((m) => ({
       timestamp: new Date(m.time).getTime()
     }));
@@ -163,3 +167,4 @@ export default function CpuStats({ metrics }) {
     </>
   );
 }
+

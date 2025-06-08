@@ -43,5 +43,8 @@ export function mergeWithGapMarkers(history = [], live = []) {
     withMarkers.push({ ...current, timestamp });
   }
 
+  console.log(withMarkers);
+
   return withMarkers;
 }
+

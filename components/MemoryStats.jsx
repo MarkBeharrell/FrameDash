@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import filter from "lodash/filter";
 import last from "lodash/last";
 import map from "lodash/map";
+import sortBy from "lodash/sortBy";
 import React from "react";
 import {
   Line,
@@ -19,19 +20,35 @@ import {
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;
 
-  const validPoints = filter(metrics, (m) =>
-    ["memoryUsed", "memoryFree", "memoryCached"].some(
-      (key) => typeof m[key] === "number"
-    )
+  // const validPoints = filter(metrics, (m) =>
+  //   ["memoryUsed", "memoryFree", "memoryCached"].some(
+  //     (key) => typeof m[key] === "number"
+  //   )
+  // );
+
+  // const chartData = map(validPoints, (entry) => ({
+  //   ...entry,
+  //   timestamp: new Date(entry.time).getTime()
+  // }));
+
+  // const gapMarkers = metrics
+  //   .filter((m) => m.isGap)
+  //   .map((m) => ({
+  //     timestamp: new Date(m.time).getTime()
+  //   }));
+
+  const chartData = sortBy(
+    metrics.map((entry) => ({
+      ...entry,
+      timestamp: new Date(entry.time).getTime()
+    })),
+    (e) => [e.timestamp, e.cpuUsage == null ? 0 : 1] // ensure data rows come after markers
   );
 
-  const chartData = map(validPoints, (entry) => ({
-    ...entry,
-    timestamp: new Date(entry.time).getTime()
-  }));
+  const today = dayjs().format("YYYY-MM-DD");
 
   const gapMarkers = metrics
-    .filter((m) => m.isGap)
+    .filter((m) => m.isGap && dayjs(m.time).format("YYYY-MM-DD") === today)
     .map((m) => ({
       timestamp: new Date(m.time).getTime()
     }));
@@ -178,3 +195,4 @@ export default function MemoryStats({ metrics }) {
     </>
   );
 }
+
