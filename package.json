@@ -22,7 +22,8 @@
     "recharts": "^2.15.3",
     "resize-observer-polyfill": "^1.5.1",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "uninstall": "^0.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
