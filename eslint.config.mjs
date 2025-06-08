@@ -100,17 +100,15 @@ export default [
           tabWidth: 2,
           useTabs: false,
           endOfLine: "lf",
+          trailingComma: "none",
           printWidth: 80,
           arrowParens: "always",
-          proseWrap: "always",
-          htmlWhitespaceSensitivity: "strict",
           bracketSpacing: true,
-          insertPragma: false,
-          requirePragma: false,
+          htmlWhitespaceSensitivity: "strict",
           quoteProps: "as-needed",
-          trailingComma: "none",
           jsxSingleQuote: false,
-          vueIndentScriptAndStyle: false
+          vueIndentScriptAndStyle: false,
+          proseWrap: "always"
         }
       ],
 

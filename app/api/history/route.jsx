@@ -133,4 +133,3 @@ export async function compressDailySnapshots(db) {
   // Delete compressed rows
   // await db.run(`DELETE FROM metrics WHERE time < ?`, cutoff);
 }
-

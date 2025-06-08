@@ -44,3 +44,7 @@ public/fonts/
 
 # Misc
 *.swp
+
+# Ignore VSCode workspace settings
+.vscode/*
+!.vscode/settings.json

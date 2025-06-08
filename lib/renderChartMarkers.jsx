@@ -78,4 +78,3 @@ export function renderChartMarkers(chartData) {
 
   return markers;
 }
-
