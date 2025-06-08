@@ -37,40 +37,56 @@ export async function GET() {
     const snapshots = await db.all(
       "SELECT * FROM daily_snapshots ORDER BY date ASC"
     );
-    const metrics = await db.all("SELECT * FROM metrics ORDER BY time ASC");
 
-    // Filter out metrics for dates already compressed into daily_snapshots
-    const compressedDates = new Set(snapshots.map((s) => s.date));
+    console.log(snapshots);
 
-    const liveData = metrics.filter((row) => {
-      const date = new Date(row.time).toISOString().split("T")[0];
-      return !compressedDates.has(date); // keep only rows not yet snapshotted
-    });
+    const rows = await db.all("SELECT * FROM metrics ORDER BY time ASC");
 
-    const data = [
-      ...snapshots.map((row) => ({
-        time: new Date(`${row.date}T00:00:00Z`),
-        timestamp: new Date(`${row.date}T00:00:00Z`).getTime(),
-        cpuUsage: row.cpuUsage,
-        memoryUsed: row.memoryUsed,
-        memoryFree: row.memoryFree,
-        memoryCached: row.memoryCached,
-        avgTemp: row.avgTemp,
-        thermalZone1: row.thermalZone1,
-        load1pct: row.load1pct ?? null
-      })),
-      ...liveData.map((row) => ({
-        time: new Date(row.time),
-        timestamp: new Date(row.time).getTime(),
-        cpuUsage: row.cpuUsage,
-        memoryUsed: row.memoryUsed,
-        memoryFree: row.memoryFree,
-        memoryCached: row.memoryCached,
-        avgTemp: row.avgTemp,
-        thermalZone1: row.thermalZone1,
-        load1pct: row.load1pct ?? null
-      }))
-    ];
+    const data = rows.map((row) => ({
+      time: new Date(row.time),
+      cpuUsage: row.cpuUsage,
+      memoryUsed: row.memoryUsed,
+      memoryFree: row.memoryFree,
+      memoryCached: row.memoryCached,
+      avgTemp: row.avgTemp,
+      thermalZone1: row.thermalZone1,
+      load1pct: row.load1pct ?? null
+    }));
+
+    // const metrics = await db.all("SELECT * FROM metrics ORDER BY time ASC");
+
+    // // Filter out metrics for dates already compressed into daily_snapshots
+    // const compressedDates = new Set(snapshots.map((s) => s.date));
+
+    // const liveData = metrics.filter((row) => {
+    //   const date = new Date(row.time).toISOString().split("T")[0];
+    //   return !compressedDates.has(date); // keep only rows not yet snapshotted
+    // });
+
+    // const data = [
+    //   ...snapshots.map((row) => ({
+    //     time: new Date(`${row.date}T00:00:00Z`),
+    //     timestamp: new Date(`${row.date}T00:00:00Z`).getTime(),
+    //     cpuUsage: row.cpuUsage,
+    //     memoryUsed: row.memoryUsed,
+    //     memoryFree: row.memoryFree,
+    //     memoryCached: row.memoryCached,
+    //     avgTemp: row.avgTemp,
+    //     thermalZone1: row.thermalZone1,
+    //     load1pct: row.load1pct ?? null
+    //   })),
+    //   ...liveData.map((row) => ({
+    //     time: new Date(row.time),
+    //     timestamp: new Date(row.time).getTime(),
+    //     cpuUsage: row.cpuUsage,
+    //     memoryUsed: row.memoryUsed,
+    //     memoryFree: row.memoryFree,
+    //     memoryCached: row.memoryCached,
+    //     avgTemp: row.avgTemp,
+    //     thermalZone1: row.thermalZone1,
+    //     load1pct: row.load1pct ?? null
+    //   }))
+    // ];
 
     return new Response(JSON.stringify(data), { status: 200 });
   } catch (err) {
@@ -133,3 +149,4 @@ export async function compressDailySnapshots(db) {
   // Delete compressed rows
   // await db.run(`DELETE FROM metrics WHERE time < ?`, cutoff);
 }
+
