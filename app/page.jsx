@@ -9,25 +9,26 @@ import { useLiveMetrics } from "@/lib/useLiveMetrics";
 import React from "react";
 
 export default function DashboardPage() {
-  const metrics = useLiveMetrics(5000);
+  const metrics = useLiveMetrics(60000);
 
   return (
     <>
-      <section className="col-span-6 flex flex-col items-center justify-center rounded-md border border-solid border-gray-700">
+      <section className="col-span-6 flex flex-col items-center justify-center rounded-md border border-solid border-gray-200">
         <WeatherTimeWidget />
       </section>
 
-      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4">
         <CpuStats metrics={metrics} />
       </section>
 
-      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4">
         <MemoryStats metrics={metrics} />
       </section>
 
-      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-700 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4">
         <TempStats metrics={metrics} />
       </section>
     </>
   );
 }
+

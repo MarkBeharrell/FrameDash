@@ -25,7 +25,7 @@ export default function WeatherTimeWidget() {
 
         {/* Center: Icon + Description */}
         <div className="flex h-full flex-col items-center justify-center">
-          <div className="flex h-[180px] w-[180px] items-center justify-center">
+          <div className="flex h-[180px] w-[180px] items-end justify-center">
             <i
               className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-9xl`}
             ></i>
@@ -93,7 +93,7 @@ export default function WeatherTimeWidget() {
           {weather.forecast5Day.map((f, i) => (
             <div
               key={i}
-              className="mx-1 flex flex-row items-center justify-between space-x-6"
+              className="mx-1 flex flex-row items-center justify-between space-x-3"
             >
               <div className="font-medium">{f.day}</div>
               <i className={`${f.icon} text-xl`} />
@@ -108,3 +108,4 @@ export default function WeatherTimeWidget() {
     </>
   );
 }
+

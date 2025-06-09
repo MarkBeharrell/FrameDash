@@ -1,11 +1,10 @@
 // "use client";
 
-import getTrendColor from "@/lib/getTrendColour";
+import { getGapMarkers } from "@/lib/getGapMarkers";
+import { getTrendValue } from "@/lib/getTrendValue";
+import { getValidPoints } from "@/lib/getValidPoints";
 import dayjs from "dayjs";
-import filter from "lodash/filter";
-import last from "lodash/last";
 import map from "lodash/map";
-// import sortBy from "lodash/sortBy";
 import React from "react";
 import {
   Line,
@@ -20,37 +19,19 @@ import {
 export default function CpuStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No CPU data available.</p>;
 
-  //  Convert and filter for chart
-  // const today = dayjs().format("YYYY-MM-DD");
-
-  const validPoints = filter(
-    metrics,
-    (m) => typeof m.cpuUsage === "number"
-    // &&
-    //   dayjs(m.time).format("YYYY-MM-DD") === today
-  );
+  const { validPoints, fixedTicks } = getValidPoints(metrics, 10);
 
   const chartData = map(validPoints, (entry) => ({
     ...entry,
-    timestamp: new Date(entry.time).getTime()
+    timestamp: new Date(entry.time).valueOf()
   }));
 
-  //  Gaps using raw time, mapped to timestamps too
-  const gapMarkers = metrics
-    .filter((m) => m.isGap)
-    .map((m) => ({
-      time: m.time,
-      timestamp: new Date(m.time).getTime()
-    }));
+  const gapMarkers = getGapMarkers(metrics);
 
-  //  Determine last CPU value + color
-  const lastValue = last(chartData);
-  const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
-  const cpuChangePct =
-    lastValue && prev
-      ? ((lastValue.cpuUsage - prev.cpuUsage) / prev.cpuUsage) * 100
-      : null;
-  const statColor = getTrendColor(lastValue?.cpuUsage, prev?.cpuUsage);
+  const { lastValue, changePct, statColor } = getTrendValue(
+    chartData,
+    "cpuUsage"
+  );
 
   return (
     <>
@@ -60,34 +41,42 @@ export default function CpuStats({ metrics }) {
       >
         {lastValue?.cpuUsage?.toFixed(1) ?? "--"}
         <span className="text-sm font-normal text-gray-400">%</span>
-        {cpuChangePct !== null && (
+        {changePct !== null && (
           <span className="ml-2 text-sm font-medium">
-            {cpuChangePct > 0 ? "+" : ""}
-            {cpuChangePct.toFixed(1)}%
+            {changePct > 0 ? "+" : ""}
+            {changePct.toFixed(1)}%
           </span>
         )}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
-          {/*  Numeric X axis */}
+        <LineChart data={chartData} margin={{ right: 10, left: 0, bottom: 10 }}>
           <XAxis
             dataKey="timestamp"
             type="number"
-            domain={["auto", "auto"]}
+            domain={[fixedTicks[0], fixedTicks[fixedTicks.length - 1]]}
+            ticks={fixedTicks}
             tickFormatter={(val) => dayjs(val).format("HH:mm")}
             stroke="#888"
-            tick={{ fill: "#888", fontSize: 13 }}
-            tickMargin={12}
+            tick={{
+              fill: "#888",
+              fontSize: 12,
+              // @ts-ignore
+              angle: -65,
+              textAnchor: "end"
+            }}
+            tickMargin={3}
+            interval={0}
           />
 
           <YAxis
             width={40}
             domain={["auto", "auto"]}
-            tick={{ fill: "#888", fontSize: 13 }}
+            tick={{ fill: "#888", fontSize: 12 }}
             tickFormatter={(value) => value.toFixed(2)}
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
+            interval={0}
           />
 
           {gapMarkers.map((gap, idx) => {

@@ -1,9 +1,9 @@
 "use client";
 
-import getTrendColor from "@/lib/getTrendColour";
+import { getGapMarkers } from "@/lib/getGapMarkers";
+import { getTrendValue } from "@/lib/getTrendValue";
+import { getValidPoints } from "@/lib/getValidPoints";
 import dayjs from "dayjs";
-import filter from "lodash/filter";
-import last from "lodash/last";
 import map from "lodash/map";
 import React from "react";
 import {
@@ -19,38 +19,19 @@ import {
 export default function MemoryStats({ metrics }) {
   if (!metrics || metrics.length === 0) return <p>No memory data available.</p>;
 
-  // const today = dayjs().format("YYYY-MM-DD");
-
-  const validPoints = filter(
-    metrics,
-    (m) =>
-      // dayjs(m.time).format("YYYY-MM-DD") === today &&
-      // (
-      typeof m.memoryUsed === "number" ||
-      typeof m.memoryFree === "number" ||
-      typeof m.memoryCached === "number"
-    // )
-  );
+  const { validPoints, fixedTicks } = getValidPoints(metrics, 10);
 
   const chartData = map(validPoints, (entry) => ({
     ...entry,
     timestamp: new Date(entry.time).getTime()
   }));
 
-  const gapMarkers = metrics
-    .filter((m) => m.isGap)
-    .map((m) => ({
-      time: m.time,
-      timestamp: new Date(m.time).getTime()
-    }));
+  const gapMarkers = getGapMarkers(metrics);
 
-  const lastValue = last(chartData);
-  const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
-  const memChangePct =
-    lastValue && prev
-      ? ((lastValue.memoryUsed - prev.memoryUsed) / prev.memoryUsed) * 100
-      : null;
-  const statColor = getTrendColor(lastValue?.memoryUsed, prev?.memoryUsed);
+  const { lastValue, changePct, statColor } = getTrendValue(
+    chartData,
+    "memoryUsed"
+  );
 
   return (
     <>
@@ -60,33 +41,42 @@ export default function MemoryStats({ metrics }) {
       >
         {lastValue?.memoryUsed?.toFixed(1) ?? "--"}
         <span className="text-sm font-normal text-gray-400">%</span>
-        {memChangePct !== null && (
+        {changePct !== null && (
           <span className="ml-2 text-sm font-medium">
-            {memChangePct > 0 ? "+" : ""}
-            {memChangePct.toFixed(1)}%
+            {changePct > 0 ? "+" : ""}
+            {changePct.toFixed(1)}%
           </span>
         )}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
+        <LineChart data={chartData} margin={{ right: 10, left: 0, bottom: 10 }}>
           <XAxis
             dataKey="timestamp"
-            type="number"
-            domain={["auto", "auto"]}
+            type="category"
+            domain={[fixedTicks[0], fixedTicks[fixedTicks.length - 1]]}
+            ticks={fixedTicks}
             tickFormatter={(val) => dayjs(val).format("HH:mm")}
             stroke="#888"
-            tick={{ fill: "#888", fontSize: 13 }}
-            tickMargin={12}
+            tick={{
+              fill: "#888",
+              fontSize: 12,
+              // @ts-ignore
+              angle: -65,
+              textAnchor: "end"
+            }}
+            tickMargin={3}
+            interval={0}
           />
 
           <YAxis
             width={40}
             domain={["auto", "auto"]}
-            tick={{ fill: "#888", fontSize: 13 }}
+            tick={{ fill: "#888", fontSize: 12 }}
             tickFormatter={(value) => value.toFixed(1)}
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
+            interval={0}
           />
 
           {/* Gaps: shade and mark */}
@@ -333,3 +323,4 @@ export default function MemoryStats({ metrics }) {
 //     </>
 //   );
 // }
+

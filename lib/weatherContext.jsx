@@ -82,14 +82,14 @@ export const WeatherProvider = ({ children }) => {
       const forecast5Day = map(
         take(
           sortBy(entries(dailyGroups), ([date]) => date),
-          5
+          6
         ),
         ([date, entriesForDate]) => ({
           day: dayjs(date).format("ddd"),
           temp: round(meanBy(entriesForDate, "main.temp")),
           icon: `wi ${iconMap[get(first(entriesForDate), "weather[0].icon", "01d")] || "wi-na"}`
         })
-      );
+      ).slice(1, 6);
 
       setWeather({
         sunrise: dayjs.unix(current.sys.sunrise).format("HH:mm"),
@@ -132,3 +132,4 @@ export const WeatherProvider = ({ children }) => {
 };
 
 export const useWeather = () => useContext(WeatherContext);
+

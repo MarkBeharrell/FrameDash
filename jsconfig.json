@@ -14,6 +14,6 @@
     "skipLibCheck": true, // Skips type checking for dependencies for performance
     "noEmit": true // Prevents emitting compiled files (handled by your build tool)
   },
-  "include": ["**/*.js", "**/*.jsx", "next.config.mjs", "eslint.config.mjs"],
+  "include": ["**/*.js", "**/*.jsx", "next.config.mjs", "eslint.config.mjs", "babel.config.js_"],
   "exclude": ["node_modules", "dist", "out", "**/*.min.js", "**/*.map.js"]
 }

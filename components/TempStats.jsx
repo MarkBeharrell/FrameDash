@@ -1,9 +1,9 @@
 "use client";
 
-import getTrendColor from "@/lib/getTrendColour";
+import { getGapMarkers } from "@/lib/getGapMarkers";
+import { getTrendValue } from "@/lib/getTrendValue";
+import { getValidPoints } from "@/lib/getValidPoints";
 import dayjs from "dayjs";
-import filter from "lodash/filter";
-import last from "lodash/last";
 import map from "lodash/map";
 import React from "react";
 import {
@@ -20,36 +20,19 @@ export default function TemperatureStats({ metrics }) {
   if (!metrics || metrics.length === 0)
     return <p>No temperature data available.</p>;
 
-  // const today = dayjs().format("YYYY-MM-DD");
-
-  const validPoints = filter(
-    metrics,
-    (m) =>
-      // dayjs(m.time).format("YYYY-MM-DD") === today &&
-      // (
-      typeof m.avgTemp === "number" || typeof m.thermalZone1 === "number"
-    // )
-  );
+  const { validPoints, fixedTicks } = getValidPoints(metrics, 10);
 
   const chartData = map(validPoints, (entry) => ({
     ...entry,
     timestamp: new Date(entry.time).getTime()
   }));
 
-  const gapMarkers = metrics
-    .filter((m) => m.isGap)
-    .map((m) => ({
-      time: m.time,
-      timestamp: new Date(m.time).getTime()
-    }));
+  const gapMarkers = getGapMarkers(metrics);
 
-  const lastValue = last(chartData);
-  const prev = chartData.length > 1 ? chartData[chartData.length - 2] : null;
-  const tempChangePct =
-    lastValue && prev
-      ? ((lastValue.thermalZone1 - prev.thermalZone1) / prev.thermalZone1) * 100
-      : null;
-  const statColor = getTrendColor(lastValue?.thermalZone1, prev?.thermalZone1);
+  const { lastValue, changePct, statColor } = getTrendValue(
+    chartData,
+    "thermalZone1"
+  );
 
   return (
     <>
@@ -63,33 +46,42 @@ export default function TemperatureStats({ metrics }) {
         <span className="align-super text-sm font-normal text-gray-400">
           °C
         </span>
-        {tempChangePct !== null && (
+        {changePct !== null && (
           <span className="ml-1 text-sm font-medium">
-            {tempChangePct > 0 ? "+" : ""}
-            {tempChangePct.toFixed(1)}%
+            {changePct > 0 ? "+" : ""}
+            {changePct.toFixed(1)}%
           </span>
         )}
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
+        <LineChart data={chartData} margin={{ right: 10, left: 0, bottom: 10 }}>
           <XAxis
             dataKey="timestamp"
-            type="number"
-            domain={["auto", "auto"]}
+            type="category"
+            domain={[fixedTicks[0], fixedTicks[fixedTicks.length - 1]]}
+            ticks={fixedTicks}
             tickFormatter={(val) => dayjs(val).format("HH:mm")}
             stroke="#888"
-            tick={{ fill: "#888", fontSize: 13 }}
-            tickMargin={12}
+            tick={{
+              fill: "#888",
+              fontSize: 12,
+              // @ts-ignore
+              angle: -65,
+              textAnchor: "end"
+            }}
+            tickMargin={3}
+            interval={0}
           />
 
           <YAxis
             width={40}
             domain={["auto", "auto"]}
-            tick={{ fill: "#888", fontSize: 13 }}
+            tick={{ fill: "#888", fontSize: 12 }}
             tickFormatter={(value) => value.toFixed(1)}
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
+            interval={0}
           />
 
           {/* Gaps: shade and mark */}
