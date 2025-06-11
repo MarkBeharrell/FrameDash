@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "serve:all": "concurrently \"next start\" \"node backgroundMetrics/backgroundMetrics.js\""
+    "serve:web": "next start",
+    "serve:metrics": "node backgroundMetrics/backgroundMetrics.js",
+    "serve:all": "concurrently \"npm run serve:web\" \"npm run serve:metrics\""
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.8",

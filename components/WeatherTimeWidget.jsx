@@ -30,7 +30,7 @@ export default function WeatherTimeWidget() {
               className={`wi ${iconMap[weather.iconCode] || "wi-na"} text-9xl`}
             ></i>
           </div>
-          <div className="w-full text-center text-lg capitalize text-gray-500">
+          <div className="w-full pt-[10px] text-center text-lg capitalize text-gray-500">
             {weather.description}
           </div>
         </div>

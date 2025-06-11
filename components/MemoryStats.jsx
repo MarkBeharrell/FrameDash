@@ -53,7 +53,7 @@ export default function MemoryStats({ metrics }) {
         <LineChart data={chartData} margin={{ right: 10, left: 0, bottom: 10 }}>
           <XAxis
             dataKey="timestamp"
-            type="category"
+            type="number"
             domain={[fixedTicks[0], fixedTicks[fixedTicks.length - 1]]}
             ticks={fixedTicks}
             tickFormatter={(val) => dayjs(val).format("HH:mm")}
@@ -73,7 +73,7 @@ export default function MemoryStats({ metrics }) {
             width={40}
             domain={["auto", "auto"]}
             tick={{ fill: "#888", fontSize: 12 }}
-            tickFormatter={(value) => value.toFixed(1)}
+            tickFormatter={(value) => value.toFixed(2)}
             padding={{ top: 5, bottom: 5 }}
             tickMargin={8}
             interval={0}

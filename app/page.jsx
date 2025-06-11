@@ -13,19 +13,19 @@ export default function DashboardPage() {
 
   return (
     <>
-      <section className="col-span-6 flex flex-col items-center justify-center rounded-md border border-solid border-gray-200">
+      <section className="col-span-6 flex flex-col items-center justify-center rounded-md border border-solid border-gray-200 dark:border-gray-800">
         <WeatherTimeWidget />
       </section>
 
-      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4 dark:border-gray-800">
         <CpuStats metrics={metrics} />
       </section>
 
-      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4 dark:border-gray-800">
         <MemoryStats metrics={metrics} />
       </section>
 
-      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4">
+      <section className="relative col-span-2 flex h-full flex-col rounded-md border border-solid border-gray-200 p-4 dark:border-gray-800">
         <TempStats metrics={metrics} />
       </section>
     </>
