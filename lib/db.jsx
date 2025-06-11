@@ -1,4 +1,4 @@
-// lib/db.js
+// lib/db.jsx
 import fs from "fs";
 import path from "path";
 import { open } from "sqlite";

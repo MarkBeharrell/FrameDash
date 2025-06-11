@@ -1,4 +1,4 @@
-// lib/polyfills.js
+// lib/polyfills.jsx
 
 import "core-js/es/array/flat"; // Array.prototype.flat
 import "core-js/es/array/includes"; // Array.prototype.includes
