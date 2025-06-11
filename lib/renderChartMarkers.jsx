@@ -1,4 +1,4 @@
-// lib/renderChartMarkers.js
+// lib/renderChartMarkers.jsx
 import React from "react";
 import { ReferenceArea, ReferenceLine } from "recharts";
 
