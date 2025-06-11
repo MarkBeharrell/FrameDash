@@ -69,7 +69,6 @@ export default [
     },
     plugins: {
       import: importPlugin,
-      "@next/next": next,
       prettier,
       react,
       "react-hooks": reactHooks,
@@ -91,9 +90,6 @@ export default [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...importPlugin.configs.recommended.rules,
-
-      // Next.js Core Web Vitals
-      ...next.configs["core-web-vitals"].rules,
 
       // Prettier formatting rules
       "prettier/prettier": [
