@@ -1,7 +1,6 @@
 // app/api/metrics/route.jsx
 import { getDB } from "@/lib/db";
 import groupBy from "lodash/groupBy";
-import map from "lodash/map";
 import mean from "lodash/mean";
 
 const NUM_CORES = parseInt(process.env.NEXT_PUBLIC_NUM_CORES) || 6;
@@ -51,7 +50,8 @@ export async function GET() {
 
     const db = await getDB();
 
-    const unified = map(grouped, (group, minuteTimestampStr) => {
+    const unified = [];
+    for (const [minuteTimestampStr, group] of Object.entries(grouped)) {
       const time = new Date(Number(minuteTimestampStr));
 
       const cpuValues = group
@@ -97,7 +97,7 @@ export async function GET() {
       const avgTemp = temps.length > 0 ? mean(temps) : null;
 
       // Save to SQLite
-      db.run(
+      await db.run(
         `INSERT INTO metrics (
           time, cpuUsage, memoryUsed, memoryFree, memoryCached, avgTemp, thermalZone1
         ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -110,7 +110,7 @@ export async function GET() {
         thermal ?? null
       );
 
-      return {
+      unified.push({
         time,
         cpuUsage,
         memoryUsed: memUsed ?? null,
@@ -119,8 +119,8 @@ export async function GET() {
         avgTemp,
         thermalZone1: thermal ?? null,
         load1pct
-      };
-    });
+      });
+    }
 
     return new Response(JSON.stringify(unified), {
       status: 200,
