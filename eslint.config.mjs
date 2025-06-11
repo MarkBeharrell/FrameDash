@@ -34,6 +34,14 @@ export default [
   },
   js.configs.recommended,
   {
+    plugins: {
+      "@next/next": next
+    },
+    rules: {
+      ...next.configs["core-web-vitals"].rules
+    }
+  },
+  {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {
       ecmaVersion: "latest",
@@ -61,7 +69,6 @@ export default [
     },
     plugins: {
       import: importPlugin,
-      next,
       prettier,
       react,
       "react-hooks": reactHooks,
@@ -83,13 +90,6 @@ export default [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...importPlugin.configs.recommended.rules,
-
-      // Next.js Core Web Vitals (remapped to flat format)
-      ...Object.fromEntries(
-        Object.entries(next.configs["core-web-vitals"].rules).map(
-          ([rule, val]) => [rule.replace("@next/next/", "next/"), val]
-        )
-      ),
 
       // Prettier formatting rules
       "prettier/prettier": [
