@@ -25,19 +25,18 @@ import React, {
 } from "react";
 
 const WeatherContext = createContext({
-  weather: null,
-  now: null
+  weather: null
 });
 
 export const WeatherProvider = ({ children }) => {
   const [weather, setWeather] = useState(null);
-  const [now, setNow] = useState(dayjs());
 
   const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API;
   const CITY = process.env.NEXT_PUBLIC_CITY || "London,GB";
 
   const fetchWeather = useCallback(async () => {
     try {
+      const now = dayjs();
       const [currentRes, forecastRes] = await Promise.all([
         axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
           params: { q: CITY, appid: API_KEY, units: "metric", lang: "en" }
@@ -112,20 +111,16 @@ export const WeatherProvider = ({ children }) => {
     } catch (err) {
       console.error("Weather fetch failed:", err);
     }
-  }, [API_KEY, CITY, now]);
+  }, [API_KEY, CITY]);
 
   useEffect(() => {
-    fetchWeather();
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
-    const timeUpdater = setInterval(() => setNow(dayjs()), 1000);
-    return () => {
-      clearInterval(interval);
-      clearInterval(timeUpdater);
-    };
+    fetchWeather(); // Fetch on mount
+    const interval = setInterval(fetchWeather, 30 * 60 * 1000); // Then every 30 mins
+    return () => clearInterval(interval);
   }, [fetchWeather]);
 
   return (
-    <WeatherContext.Provider value={{ weather, now }}>
+    <WeatherContext.Provider value={{ weather }}>
       {children}
     </WeatherContext.Provider>
   );

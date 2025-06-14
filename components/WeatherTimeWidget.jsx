@@ -2,10 +2,17 @@
 
 import { useWeather } from "@/lib/weatherContext";
 import iconMap from "@/utils/iconMap";
-import React from "react";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
 
 export default function WeatherTimeWidget() {
-  const { weather, now } = useWeather();
+  const { weather } = useWeather();
+  const [now, setNow] = useState(dayjs());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(dayjs()), 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (!weather)
     return <div className="text-center text-gray-500">Loading...</div>;
