@@ -18,7 +18,7 @@
     "concurrently": "^9.1.2",
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
-    "next": "^15.3.3",
+    "next": "^15.4.7",
     "node-fetch": "^3.3.2",
     "postcss-preset-env": "^10.2.0",
     "react": "19.1.0",
